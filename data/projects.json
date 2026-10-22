@@ -1,0 +1,135 @@
+{
+  "groups": [
+    {
+      "id": "ux",
+      "label": "UX Design",
+      "device": "phone",
+      "projects": [
+        {
+          "id": "ux-1",
+          "title": "KYK ASİSTAN",
+          "category": "UX DESIGN",
+          "year": "2026",
+          "role": "",
+          "tools": "",
+          "intro": "Bu projenin açıklaması yakında eklenecek.",
+          "problem": "",
+          "approach": "",
+          "result": "",
+          "cardImage": "",
+          "coverImage": "",
+          "gallery": [],
+          "phoneScreens": []
+        },
+        {
+          "id": "ux-2",
+          "title": "ROUTURKEY",
+          "category": "UX DESIGN",
+          "year": "2026",
+          "role": "",
+          "tools": "",
+          "intro": "Bu projenin açıklaması yakında eklenecek.",
+          "problem": "",
+          "approach": "",
+          "result": "",
+          "cardImage": "",
+          "coverImage": "",
+          "gallery": [],
+          "phoneScreens": []
+        },
+        {
+          "id": "ux-3",
+          "title": "Proje 3",
+          "category": "UX DESIGN",
+          "year": "2026",
+          "role": "",
+          "tools": "",
+          "intro": "Bu projenin açıklaması yakında eklenecek.",
+          "problem": "",
+          "approach": "",
+          "result": "",
+          "cardImage": "",
+          "coverImage": "",
+          "gallery": [],
+          "phoneScreens": []
+        }
+      ]
+    },
+    {
+      "id": "kimlik",
+      "label": "Kurumsal Kimlik Tasarımı",
+      "projects": [
+        {
+          "id": "kimlik-1",
+          "title": "ARDA EMLAK",
+          "category": "KURUMSAL KİMLİK",
+          "year": "2026",
+          "role": "TASARIMCI",
+          "tools": "Adobe İllustrator",
+          "intro": "Bu projenin açıklaması yakında eklenecek.",
+          "problem": "",
+          "approach": "",
+          "result": "",
+          "cardImage": "",
+          "coverImage": "",
+          "gallery": [],
+          "phoneScreens": []
+        },
+        {
+          "id": "kimlik-2",
+          "title": "ÇELEBİ TİCARET",
+          "category": "KURUMSAL KİMLİK",
+          "year": "2026",
+          "role": "TASARIMCI",
+          "tools": "Adobe İllustrator",
+          "intro": "Birçok sektörde hizmet veren Çelebi Ticaret firmasına özgün renkler ve tipografi ile kurumsal kimlik kazandırdım.",
+          "problem": "",
+          "approach": "",
+          "result": "",
+          "cardImage": "assets/projects/celebi-ticaret-card-mvjge6m8.jpg",
+          "coverImage": "assets/projects/celebi-ticaret-cover-mvjg75h7.webp",
+          "gallery": [
+            "assets/projects/celebi-ticaret-galeri-mvjgc2qu.webp",
+            "assets/projects/celebi-ticaret-galeri-mvjgc2gc.webp",
+            "assets/projects/celebi-ticaret-galeri-mvjgc31s.webp",
+            "assets/projects/celebi-ticaret-galeri-mvjgc3cn.webp",
+            "assets/projects/celebi-ticaret-galeri-mvjgc72h.webp"
+          ],
+          "phoneScreens": []
+        },
+        {
+          "id": "kimlik-3",
+          "title": "ABDULKADİR BAYRAM İNŞAAT",
+          "category": "KURUMSAL KİMLİK",
+          "year": "2026",
+          "role": "TASARIMCI",
+          "tools": "",
+          "intro": "Bu projenin açıklaması yakında eklenecek.",
+          "problem": "",
+          "approach": "",
+          "result": "",
+          "cardImage": "",
+          "coverImage": "",
+          "gallery": [],
+          "phoneScreens": []
+        },
+        {
+          "id": "kimlik-4",
+          "title": "CELEBİ DESIGN",
+          "category": "KURUMSAL KİMLİK",
+          "year": "2026",
+          "role": "TASARIMCI",
+          "tools": "",
+          "intro": "Bu projenin açıklaması yakında eklenecek.",
+          "problem": "",
+          "approach": "",
+          "result": "",
+          "cardImage": "",
+          "coverImage": "",
+          "gallery": [],
+          "phoneScreens": []
+        }
+      ]
+    }
+  ]
+}
