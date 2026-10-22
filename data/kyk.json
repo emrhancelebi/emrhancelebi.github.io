@@ -1,0 +1,125 @@
+{
+  "id": "kyk",
+  "persona": { "name": "Oğuz Kağan", "initials": "OK" },
+
+  "cover": {
+    "label": "KYK Asistan arayüz ekranları (temsili)",
+    "note": "Temsili ekranlar; gerçek arayüz görselleri gelince 'image' alanına yol yazılacak.",
+    "rows": [
+      [
+        { "kind": "login", "title": "Hoş geldin", "image": "" },
+        { "kind": "dining", "title": "Yemekhane", "image": "" },
+        { "kind": "laundry", "title": "Çamaşırhane", "image": "" },
+        { "kind": "permit", "title": "İzin talebi", "image": "" },
+        { "kind": "home", "title": "Ana sayfa", "image": "" }
+      ],
+      [
+        { "kind": "fault", "title": "Arıza bildir", "image": "" },
+        { "kind": "roommate", "title": "Oda arkadaşım", "image": "" },
+        { "kind": "support", "title": "Destek", "image": "" },
+        { "kind": "events", "title": "Etkinlikler", "image": "" },
+        { "kind": "qr", "title": "Giriş kartı", "image": "" }
+      ]
+    ]
+  },
+
+  "problem": {
+    "title": "Problem Nerede Başladı?",
+    "text": "GSB Biz uygulamasında öğrenciler birçok yurt işlemini gerçekleştirmekte zorlanıyor. Karmaşık arayüz ve kopuk kullanıcı deneyimi, günlük rutinleri birer operasyonel yük haline getiriyor.",
+    "kpis": [
+      { "value": 850000, "suffix": "+", "unit": "Öğrenci", "note": "Aktif olarak barınma hizmeti alan genç nüfus" },
+      { "value": 800, "suffix": "+", "unit": "Yurt", "note": "Yüksek kapasiteli kurumsal konaklama birimi" }
+    ]
+  },
+
+  "process": {
+    "title": "Design Thinking / Double Diamond",
+    "lead": "5 aşamalı, iteratif bir süreç: her test turu yeniden empatiye döndü.",
+    "steps": [
+      { "name": "Empati", "icon": "empathy" },
+      { "name": "Tanımlama", "icon": "define" },
+      { "name": "Fikir Üretme", "icon": "ideate" },
+      { "name": "Prototipleme", "icon": "prototype" },
+      { "name": "Test", "icon": "test" }
+    ],
+    "methods": ["Netnografi", "Derinlemesine Görüşme", "Anket", "Affinity Mapping", "Persona", "Empathy Map", "User Flow"],
+    "notes": [
+      { "title": "Kullanıcı araştırması", "text": "KYK yurtlarında kalan öğrencilerle birebir görüşmeler yapıldı ve ağrı noktaları tespit edildi." },
+      { "title": "Stratejik planlama", "text": "Affinity map ile toplanan ham veriler anlamlı kategorilere ayrıldı, ürün yol haritası oluşturuldu." },
+      { "title": "Veri Temelli Kararlar", "text": "Sürecin her adımında toplanan veriler analiz edilerek kullanıcı ihtiyaçları netleştirildi.", "emphasis": true }
+    ]
+  },
+
+  "findings": {
+    "title": "Araştırmalar Ne Gösterdi?",
+    "lead": "Görüşme ve anketlerden 4 kritik sorun çıktı.",
+    "items": [
+      { "id": "ia", "title": "Bilgi Mimarisi Karmaşıklığı", "text": "Aranan bilgiye ulaşmak ortalama 6 tık sürüyor; kritik belgelere ulaşmak için labirent benzeri menüler.",
+        "metrics": [
+          { "type": "donut", "value": 82, "display": "%82", "label": "memnuniyetsizlik" },
+          { "type": "clicks", "value": 6, "display": "6 tık", "label": "aranan bilgiye ulaşmak için ortalama" }
+        ] },
+      { "id": "auth", "title": "Tekrarlayan E-Devlet Onayları", "text": "İzin takibi, yemekhane bakiye kontrolü gibi her basit işlemde E-Devlet'e yönlendirme, oturum kopmaları.",
+        "metrics": [ { "type": "delay", "value": 4.2, "display": "+4.2 dk", "label": "işlem süresinde gecikme", "scaleMax": 5 } ] },
+      { "id": "services", "title": "Eksik Yurt Hizmetleri", "text": "Asansör arıza bildirimi, çamaşırhane doluluk takibi, oda arkadaşı iletişimi gibi fonksiyonlar dijitalde yok.",
+        "metrics": [ { "type": "progress", "value": 94, "display": "%94", "label": "talep / beklenti" } ] },
+      { "id": "contact", "title": "Muhatap Eksikliği", "text": "Sorun yaşandığında resmi dijital kanal yok, şikâyetler sosyal medyada çözülmeye çalışılıyor.",
+        "metrics": [ { "type": "status", "display": "Belirsiz", "label": "Geri dönüş hızı" } ] }
+    ]
+  },
+
+  "quotes": {
+    "title": "Kullanıcılar Ne Diyor?",
+    "items": [
+      { "text": "İstediğim etkinliği bulmak çok zor.", "source": "Öğrenci görüşü", "context": "İstanbul, 3. sınıf" },
+      { "text": "Yurt işlemlerinin hepsi uygulamada yok.", "source": "Kullanıcı deneyimi notu", "context": "Fragmented Experience" },
+      { "text": "Her çıkışta tekrar e-devlet onayı istiyor.", "source": "Teknik bariyer", "context": "Auth Friction" },
+      { "text": "Aradığım şeyi bulamıyorum.", "source": "Information Architecture", "context": "Navigasyon Sorunu", "featured": true }
+    ]
+  },
+
+  "empathy": {
+    "title": "Empati Haritası",
+    "quadrants": [
+      { "title": "Ne Görüyor?", "items": [
+        { "title": "Karmaşık onay süreçleri", "quote": "E-devlet onayı için her seferinde sistemin dışına çıkmak zorunda kalıyorum." },
+        { "title": "Bekleme sıraları", "quote": "Çamaşır makinesi sırası bekleyen mutsuz öğrenciler görüyorum." } ] },
+      { "title": "Ne Duyuyor?", "items": [
+        { "title": "Arkadaş şikâyetleri", "quote": "Yurttaki herkes sistemin çok yavaş ve karışık olduğundan dert yanıyor." },
+        { "title": "Sistem hataları", "quote": "Hata mesajları ve çalışmayan butonlar hakkında uyarılar duyuyorum." } ] },
+      { "title": "Düşünüyor & Hissediyor", "tags": ["Gerilme", "Belirsizlik"], "items": [
+        { "title": "Dijital Yalnızlık", "quote": "Bir sorunum olduğunda muhatap bulamamak beni çaresiz hissettiriyor." } ] },
+      { "title": "Yapıyor & Söylüyor", "items": [
+        { "title": "Çözüm arayışı", "quote": "Sürekli olarak daha hızlı bir yol var mı diye arayüzde geziniyor." },
+        { "title": "Aktif kullanım", "quote": "Hizmetleri manuel de olsa kullanmaya, sistemle baş etmeye çalışıyor." } ] }
+    ]
+  },
+
+  "personaCard": {
+    "title": "Birincil Persona",
+    "name": "Oğuz Kağan",
+    "facts": [
+      { "label": "Yaş", "value": "20" },
+      { "label": "Şehir", "value": "İstanbul" },
+      { "label": "Bölüm", "value": "İşletme, üniversite öğrencisi" },
+      { "label": "Barınma", "value": "KYK yurdu sakini" }
+    ],
+    "bio": "Zamanının çoğunu kampüs ve KYK yurdu arasında geçiriyor. Teknolojiye hâkim, her türlü bürokratik süreci dijitalleştirmeyi tercih ediyor. Sabırsız; verimlilik en büyük motivasyon kaynağı.",
+    "goals": ["Yurt hizmetlerine (yemekhane, izin, arıza) mobil erişim", "Tüm onay süreçlerinin dijitalleşmesi", "Bekleme sürelerinin minimize edilmesi"],
+    "motivations": [ { "label": "Hız & Verimlilik", "value": 95 }, { "label": "Şeffaflık", "value": 80 } ],
+    "pains": [ { "label": "Zaman kaybı", "icon": "clock" }, { "label": "Karmaşık arayüz", "icon": "maze" }, { "label": "Muhatap eksikliği", "icon": "nobody" } ],
+    "quote": "İşlemlerimi halletmek için sıraya girmek değil, tek bir dokunuşla çözüme ulaşmak istiyorum."
+  },
+
+  "solutions": {
+    "title": "Sorun → Çözüm",
+    "lead": "Araştırmada bulunan 4 sorun ve tasarımdaki karşılıkları.",
+    "_not": "Sunumda ölçülmüş sonuç verisi yok; bu yüzden burada rakam kullanılmıyor. Çözüm metinleri (todo: true) Emirhan tarafından doğrulanmalı.",
+    "items": [
+      { "problem": "Bilgi Mimarisi Karmaşıklığı", "metric": "Ortalama 6 tık", "solution": "Tek ekrandan erişim", "text": "Sık kullanılan yurt işlemleri ana ekranda toplanır; kritik belgelere tek dokunuşla ulaşılır.", "todo": true },
+      { "problem": "Tekrarlayan E-Devlet Onayları", "metric": "+4.2 dk gecikme", "solution": "Oturum sürekliliği", "text": "Tek seferlik doğrulamadan sonra izin ve bakiye işlemleri uygulama içinde tamamlanır.", "todo": true },
+      { "problem": "Eksik Yurt Hizmetleri", "metric": "%94 talep", "solution": "Çamaşırhane, arıza ve oda arkadaşı modülleri", "text": "Çamaşırhane doluluk takibi, asansör/arıza bildirimi ve oda arkadaşı iletişimi dijitale taşınır.", "todo": true },
+      { "problem": "Muhatap Eksikliği", "metric": "Geri dönüş: belirsiz", "solution": "Uygulama içi destek kanalı", "text": "Sorunlar resmi bir kanaldan iletilir, talebin durumu uygulamadan izlenir.", "todo": true }
+    ]
+  }
+}

@@ -33,7 +33,7 @@
         return { title: p.title || "Adsız proje", num: i + 1, category: p.category || "", year: p.year || "", role: p.role || "", tools: p.tools || "",
           intro: p.intro || "", problem: p.problem || "", approach: p.approach || "", result: p.result || "",
           gallery: (p.gallery || []).filter(Boolean), cardImage: p.cardImage || "", coverImage: p.coverImage || "",
-          phoneScreens: (p.phoneScreens || []).filter(Boolean) };
+          phoneScreens: (p.phoneScreens || []).filter(Boolean), caseStudy: p.caseStudy || "" };
       });
       var key = String(g.id || "g" + gi).toLowerCase().replace(/[^a-z0-9-]+/g, "-") || "g" + gi;
       return { key: key, label: g.label || "Grup", items: items, phone: g.device === "phone",
@@ -471,6 +471,11 @@
         media.classList.add("pf-gallery");
         media.innerHTML = pr.gallery.map(function (g) { return '<img src="' + esc(g) + '" alt="' + esc(pr.title) + ' görseli" loading="lazy">'; }).join("");
       } else if (media && real) media.remove();
+      /* Vaka çalışması verisi olan projede (projects.json → caseStudy) bölümler casestudy.js ile kurulur. */
+      if (pr.caseStudy && W.CaseStudy) {
+        W.CaseStudy.load(pr.caseStudy).then(function (d) { if (wrap.isConnected) W.CaseStudy.render(wrap, d); })
+          .catch(function (e) { if (W.console) console.warn("Vaka çalışması yüklenemedi", e); });
+      }
     }
     function refresh() {
       var f = host.querySelector(".ec-footer"); if (f) f.replaceWith(contactClone(host));

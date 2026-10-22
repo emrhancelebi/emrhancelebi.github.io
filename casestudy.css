@@ -1,0 +1,229 @@
+/* Vaka çalışması bileşenleri. Yalnızca tasarım sistemi token'ları: --ec-deep (veri işareti),
+   --ec-ink (metin), --ec-muted (ikincil metin), --ec-lav1/2 (iz, zemin), --ec-raised (kart). */
+
+.cs-sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+.cs-ic { width: 20px; height: 20px; fill: none; stroke: currentColor; stroke-width: 1.6; stroke-linecap: round; stroke-linejoin: round; flex: none; }
+
+/* Bölüm: başlık + giriş satırı tasarım sistemindeki gibi, görseller altında tam genişlik */
+.cs-sec { row-gap: 0; }
+.cs-sec .cs-lead { grid-column: 6 / span 7; margin: 0; color: var(--ec-ink); font-size: 17px; line-height: 1.6; }
+.cs-body { grid-column: 1 / -1; margin-top: 40px; min-width: 0; }
+/* Tasarım sisteminin ".ec-detail__sec p { grid-column: 6 / span 7 }" kuralı vaka kartlarının içine sızmasın. */
+.cs-body p, .cs-body blockquote, .cs-body h4 { grid-column: auto; }
+.cs-text { margin: 0 0 32px !important; max-width: 62ch; font-size: 20px; line-height: 1.55; color: var(--ec-ink); }
+.cs-sub { margin: 40px 0 12px !important; font: 500 14px/1.3 var(--ec-sans); color: var(--ec-muted); }
+
+/* Görünür olunca yükselme (JS yoksa ya da azaltılmış harekette hep görünür) */
+.cs-reveal.is-armed { opacity: 0; transform: translateY(20px); transition: opacity var(--duration-l) var(--easing-standard), transform var(--duration-l) var(--easing-emphasized); }
+.cs-reveal.is-armed.is-in { opacity: 1; transform: none; }
+
+/* ───────── StatTile ───────── */
+.cs-stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 24px; }
+.cs-stat { padding: 32px; border-radius: var(--radius-lg, 24px); background: var(--ec-raised); box-shadow: 0 0 0 1px var(--ec-p16); }
+.cs-stat__num { margin: 0 !important; font-family: var(--ec-display); font-weight: 340; font-variation-settings: "SOFT" 100, "opsz" 144; font-size: clamp(56px, 8cqw, 112px); line-height: .95; letter-spacing: -0.035em; color: var(--ec-deep); font-variant-numeric: tabular-nums; }
+.cs-stat__unit { margin: 8px 0 0 !important; font-family: var(--ec-display); font-size: 28px; color: var(--ec-deep); }
+.cs-stat__note { margin: 12px 0 0 !important; font-size: 15px; color: var(--ec-muted); max-width: 32ch; }
+
+/* ───────── Süreç ───────── */
+.cs-steps { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.cs-step { position: relative; display: grid; justify-items: start; gap: 12px; padding: 20px; border-radius: 20px; background: var(--ec-lav1); color: var(--ec-deep); }
+.cs-step__ic { width: 44px; height: 44px; border-radius: 50%; display: grid; place-items: center; background: var(--ec-raised); }
+.cs-step__name { font-family: var(--ec-display); font-size: 20px; line-height: 1.15; }
+.cs-step__link { position: absolute; right: -14px; top: 50%; transform: translateY(-50%); z-index: 1; width: 22px; height: 22px; border-radius: 50%; background: var(--ec-bg); color: var(--ec-ink); display: grid; place-items: center; }
+.cs-step__link .cs-ic { width: 14px; height: 14px; }
+.cs-loop { display: flex; align-items: center; gap: 8px; margin: 14px 0 0 !important; font-size: 14px; color: var(--ec-muted); }
+.cs-loop .cs-ic { width: 16px; height: 16px; color: var(--ec-ink); }
+
+.cs-dd { margin: 32px 0 0; padding: 24px; border-radius: var(--radius-lg, 24px); background: var(--ec-raised); box-shadow: 0 0 0 1px var(--ec-p16); }
+.cs-dd svg { display: block; width: 100%; max-width: 760px; height: auto; margin: 0 auto; overflow: visible; }
+.cs-dd__shape { fill: var(--ec-lav1); stroke: var(--ec-ink); stroke-width: 1.5; }
+.cs-dd__shape--b { fill: var(--ec-lav2); }
+.cs-dd__axis { stroke: var(--ec-p40); stroke-width: 1; stroke-dasharray: 3 5; }
+.cs-dd__dot { fill: var(--ec-deep); stroke: var(--ec-raised); stroke-width: 2; }
+.cs-dd__label { font: 500 15px var(--ec-sans); fill: var(--ec-deep); paint-order: stroke; stroke: var(--ec-raised); stroke-width: 5px; stroke-linejoin: round; }
+.cs-dd__cap { font: 400 12px var(--ec-sans); fill: var(--ec-muted); }
+.cs-dd figcaption { margin-top: 12px; font-size: 13px; color: var(--ec-muted); }
+
+.cs-chips { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 8px; }
+.cs-chip { padding: 8px 14px; border-radius: 999px; background: var(--ec-raised); box-shadow: inset 0 0 0 1px var(--ec-p16); font-size: 14px; color: var(--ec-ink); }
+.cs-chip--tag { background: var(--ec-deep); color: var(--ec-bg); box-shadow: none; font-weight: 500; }
+.cs-notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 32px; }
+.cs-note { padding: 24px; border-radius: 20px; background: var(--ec-lav1); }
+.cs-note p { margin: 0 !important; font-size: 15px; line-height: 1.55; color: var(--ec-ink); }
+.cs-note .cs-note__t { margin-bottom: 8px !important; font-family: var(--ec-display); font-size: 20px; color: var(--ec-deep); }
+.cs-note--em { background: var(--ec-deep); }
+.cs-note--em p, .cs-note--em .cs-note__t { color: var(--ec-bg); }
+
+/* ───────── Araştırma bulguları ───────── */
+.cs-findings { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+.cs-card { display: grid; align-content: start; gap: 10px; padding: 28px; border-radius: var(--radius-lg, 24px); background: var(--ec-raised); box-shadow: 0 0 0 1px var(--ec-p16); }
+.cs-card__t { margin: 0; font-family: var(--ec-display); font-weight: 400; font-size: 24px; line-height: 1.2; color: var(--ec-deep); }
+.cs-card__p { margin: 0 !important; font-size: 15px; line-height: 1.55; color: var(--ec-ink); }
+.cs-card__metrics { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 20px; margin-top: 12px; padding-top: 20px; border-top: 1px solid var(--ec-p16); }
+.cs-m { margin: 0; display: grid; gap: 12px; align-content: start; }
+.cs-m figcaption { font-size: 14px; line-height: 1.45; color: var(--ec-ink); }
+.cs-m figcaption b { font-family: var(--ec-display); font-weight: 400; font-size: 22px; color: var(--ec-deep); margin-right: 4px; }
+.cs-unit { color: var(--ec-muted); }
+
+.cs-m--donut svg { width: 112px; height: 112px; }
+.cs-track { fill: none; stroke: var(--ec-lav2); }
+.cs-arc { fill: none; stroke: var(--ec-deep); stroke-linecap: round; }
+.cs-donut__v { font-family: var(--ec-display); font-size: 24px; fill: var(--ec-deep); }
+.is-armed .cs-grow { stroke-dashoffset: var(--len); transition: stroke-dashoffset 1200ms var(--easing-emphasized) 200ms; }
+.is-armed.is-in .cs-grow { stroke-dashoffset: 0; }
+
+.cs-clicks { list-style: none; margin: 0; padding: 4px 0; display: flex; align-items: center; gap: 0; }
+.cs-click { display: flex; align-items: center; flex: 1; }
+.cs-click span { width: 26px; height: 26px; border-radius: 50%; display: grid; place-items: center; flex: none; background: var(--ec-lav2); color: var(--ec-deep); font: 600 12px/1 var(--ec-sans); }
+.cs-click:not(:last-child)::after { content: ""; flex: 1; height: 2px; margin: 0 4px; background: var(--ec-p40); border-radius: 2px; }
+.cs-click:last-child { flex: none; }
+.cs-click--end span { background: var(--ec-deep); color: var(--ec-bg); box-shadow: 0 0 0 4px var(--ec-lav1); }
+.is-armed .cs-click span { opacity: .25; transform: scale(.8); transition: opacity var(--duration-m) var(--easing-standard), transform var(--duration-m) var(--easing-spring); transition-delay: calc(300ms + var(--i) * 140ms); }
+.is-armed.is-in .cs-click span { opacity: 1; transform: none; }
+
+.cs-bar { display: grid; gap: 6px; padding-top: 4px; }
+.cs-bar__track { position: relative; height: 12px; border-radius: 6px; background: var(--ec-lav2); overflow: hidden; }
+.cs-bar__fill { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 6px; background: var(--ec-deep); transform-origin: left center; }
+.is-armed .cs-grow-x { transform: scaleX(0); transition: transform 1100ms var(--easing-emphasized) 250ms; }
+.is-armed.is-in .cs-grow-x { transform: none; }
+.cs-bar__axis { position: relative; height: 16px; font-size: 11px; color: var(--ec-muted); font-variant-numeric: tabular-nums; }
+.cs-bar__axis span { position: absolute; top: 0; transform: translateX(-50%); }
+.cs-bar__axis span:first-child { transform: none; }
+.cs-bar__axis span:last-child { transform: translateX(-100%); }
+
+.cs-badge { display: inline-flex; align-items: center; gap: 10px; margin: 4px 0 0 !important; padding: 10px 16px; border-radius: 999px; background: var(--ec-lav1); box-shadow: inset 0 0 0 1px var(--ec-p40); color: var(--ec-deep); font-size: 15px; width: fit-content; }
+.cs-badge b { font-weight: 600; }
+.cs-m--status figcaption { color: var(--ec-muted); }
+
+/* ───────── Kullanıcı sesleri ───────── */
+.cs-quotes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 20px; }
+.cs-quote { margin: 0; padding: 28px; border-radius: var(--radius-lg, 24px); background: var(--ec-lav1); display: grid; align-content: space-between; gap: 24px; }
+.cs-quote blockquote { margin: 0; font-family: var(--ec-display); font-weight: 360; font-size: 24px; line-height: 1.25; color: var(--ec-deep); }
+.cs-quote figcaption { font-size: 13px; color: var(--ec-muted); }
+.cs-quote--featured { grid-column: 1 / -1; grid-row: 1; background: var(--ec-deep); padding: 40px; }
+.cs-quote--featured blockquote { font-size: clamp(32px, 4.4cqw, 56px); line-height: 1.08; color: var(--ec-bg); letter-spacing: -0.02em; }
+.cs-quote--featured figcaption { color: var(--ec-lav2); }
+
+/* ───────── Empati haritası ───────── */
+.cs-emp { position: relative; display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cs-emp__q { padding: 28px 28px 32px; border-radius: 20px; background: var(--ec-raised); box-shadow: 0 0 0 1px var(--ec-p16); display: grid; align-content: start; gap: 14px; }
+.cs-emp__q--1, .cs-emp__q--2 { background: var(--ec-lav1); box-shadow: none; }
+.cs-emp__q h4 { margin: 0; font-family: var(--ec-display); font-weight: 400; font-size: 22px; color: var(--ec-deep); }
+.cs-emp__item p { margin: 0 !important; font-size: 15px; line-height: 1.5; color: var(--ec-ink); }
+.cs-emp__item .cs-emp__it { font-weight: 600; color: var(--ec-deep); margin-bottom: 2px !important; }
+.cs-emp__q--1, .cs-emp__q--3 { padding-left: 64px; }
+.cs-emp__q--0, .cs-emp__q--2 { padding-right: 64px; }
+.cs-emp__center {
+  position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1;
+  width: 104px; height: 104px; border-radius: 50%; background: var(--ec-deep); color: var(--ec-bg);
+  display: grid; place-content: center; text-align: center; box-shadow: 0 0 0 8px var(--ec-bg);
+}
+.cs-emp__center span { font-family: var(--ec-display); font-size: 30px; line-height: 1; }
+.cs-emp__center small { font-size: 11px; margin-top: 4px; opacity: .9; }
+
+/* ───────── Persona ───────── */
+.cs-persona { padding: 40px; border-radius: var(--radius-lg, 24px); background: var(--ec-raised); box-shadow: 0 0 0 1px var(--ec-p16); display: grid; gap: 32px; }
+.cs-persona__id { display: flex; align-items: center; gap: 24px; }
+.cs-avatar { width: 96px; height: 96px; border-radius: 50%; flex: none; display: grid; place-items: center; background: var(--ec-lav2); color: var(--ec-deep); font-family: var(--ec-display); font-size: 34px; }
+.cs-persona__name { margin: 0 0 10px !important; font-family: var(--ec-display); font-size: clamp(32px, 4cqw, 48px); line-height: 1; color: var(--ec-deep); }
+.cs-facts { margin: 0; display: flex; flex-wrap: wrap; gap: 8px 24px; }
+.cs-facts div { display: flex; gap: 6px; font-size: 15px; }
+.cs-facts dt { color: var(--ec-muted); }
+.cs-facts dd { margin: 0; color: var(--ec-ink); }
+.cs-persona__bio { margin: 0 !important; max-width: 64ch; font-size: 17px; line-height: 1.6; color: var(--ec-ink); }
+.cs-persona__grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 32px; }
+.cs-persona__grid h4 { margin: 0 0 14px; font: 600 14px/1.3 var(--ec-sans); color: var(--ec-muted); }
+.cs-goals, .cs-pains { list-style: none; margin: 0; padding: 0; display: grid; gap: 10px; }
+.cs-goals li { display: flex; gap: 10px; font-size: 15px; line-height: 1.45; color: var(--ec-ink); }
+.cs-goals .cs-ic { width: 18px; height: 18px; color: var(--ec-deep); margin-top: 1px; }
+.cs-mot { margin-bottom: 16px; }
+.cs-mot p { margin: 0 0 8px !important; display: flex; justify-content: space-between; font-size: 15px; color: var(--ec-ink); }
+.cs-mot b { font-family: var(--ec-display); font-weight: 400; font-size: 20px; color: var(--ec-deep); }
+.cs-pains li { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 14px; background: var(--ec-lav1); font-size: 15px; color: var(--ec-deep); }
+.cs-persona__q { margin: 0; padding: 28px 32px; border-radius: 20px; background: var(--ec-deep); color: var(--ec-bg); font-family: var(--ec-display); font-size: clamp(22px, 2.6cqw, 32px); line-height: 1.25; }
+
+/* ───────── Sorun → Çözüm ───────── */
+.cs-sol { list-style: none; margin: 0; padding: 0; display: grid; gap: 14px; }
+.cs-sol__row { display: grid; grid-template-columns: minmax(0, 1fr) 48px minmax(0, 1.3fr); align-items: stretch; }
+.cs-sol__p, .cs-sol__s { padding: 22px 24px; border-radius: 20px; }
+.cs-sol__p { background: var(--ec-lav1); }
+.cs-sol__s { background: var(--ec-raised); box-shadow: 0 0 0 1px var(--ec-p16); }
+.cs-sol__arrow { display: grid; place-items: center; color: var(--ec-deep); }
+.cs-sol__row p { margin: 0 !important; font-size: 15px; line-height: 1.5; color: var(--ec-ink); }
+.cs-sol__row .cs-sol__k { font-size: 12px; font-weight: 600; color: var(--ec-muted); margin-bottom: 6px !important; }
+.cs-sol__row .cs-sol__t { font-family: var(--ec-display); font-size: 22px; line-height: 1.2; color: var(--ec-deep); margin-bottom: 6px !important; }
+.cs-sol__row .cs-sol__m { color: var(--ec-muted); }
+
+/* ───────── Kapak: sağa akan arayüz kartları ───────── */
+.ec-detail__hero.cs-hero { display: block; position: relative; background: var(--ec-lav2); }
+.cs-mq { position: absolute; inset: 0; display: grid; align-content: center; gap: 4%; padding: 2% 0; overflow: hidden;
+  -webkit-mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); mask-image: linear-gradient(90deg, transparent, #000 10%, #000 90%, transparent); }
+.cs-mq__row { overflow: hidden; }
+.cs-mq__track { display: flex; width: max-content; animation: cs-flow var(--mq-dur, 40s) linear infinite; will-change: transform; }
+.cs-mq__row--1 .cs-mq__track { --mq-dur: 32s; animation-delay: -12s; }
+.cs-mq:hover .cs-mq__track { animation-play-state: paused; }
+.cs-mq__set { list-style: none; margin: 0; padding: 0; display: flex; gap: 20px; padding-right: 20px; }
+/* Sağa akış: içerik iki kez kopyalandığı için -50%'den 0'a kaymak dikişsiz döngü verir */
+@keyframes cs-flow { from { transform: translateX(-50%); } to { transform: translateX(0); } }
+/* Kapak 2:1; iki sıra ve aralarındaki boşluk düşülünce sıra yüksekliği ≈ genişliğin %22'si → 9:15 kart ≈ %12 genişlik */
+.cs-mq__card { width: clamp(64px, 12cqw, 210px); aspect-ratio: 9 / 15; border-radius: 22px; overflow: hidden; background: var(--ec-raised); box-shadow: 0 10px 24px -14px rgba(16, 50, 115, .35); flex: none; }
+.cs-mq__card img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Temsili ekran içeriği */
+.u-screen { box-sizing: border-box; height: 100%; padding: 10% 9%; display: flex; flex-direction: column; gap: 6%; font-size: clamp(8px, 1.05cqw, 13px); color: var(--ec-ink); }
+.u-status { margin: 0 !important; display: flex; justify-content: space-between; font-size: .8em; color: var(--ec-deep); }
+.u-status i { width: 18%; height: .7em; border-radius: 3px; background: var(--ec-deep); opacity: .7; }
+.u-h { margin: 0 !important; font-family: var(--ec-display); font-size: 1.55em; line-height: 1.1; color: var(--ec-deep); }
+.u-s { margin: 0 !important; font-size: .9em; color: var(--ec-muted); }
+.u-row { margin: 0 !important; display: flex; justify-content: space-between; padding: .7em .8em; border-radius: .8em; background: var(--ec-lav1); font-size: .9em; }
+.u-row b { font-weight: 600; color: var(--ec-deep); } .u-row i { font-style: normal; color: var(--ec-muted); }
+.u-btn { margin-top: auto; padding: .8em; border-radius: 999px; background: var(--ec-deep); color: var(--ec-bg); text-align: center; font-weight: 600; font-size: .9em; }
+.u-ghost { text-align: center; font-size: .85em; color: var(--ec-muted); }
+.u-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5em; }
+.u-grid i { aspect-ratio: 1; border-radius: .6em; background: var(--ec-lav1); box-shadow: inset 0 0 0 1px var(--ec-p16); }
+.u-grid i.on { background: var(--ec-deep); box-shadow: none; }
+.u-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: .5em; }
+.u-tiles i { font-style: normal; aspect-ratio: 1.1; border-radius: .8em; background: var(--ec-lav1); display: grid; place-items: end start; padding: .6em; font-weight: 600; font-size: .85em; color: var(--ec-deep); }
+.u-bubble { align-self: flex-start; max-width: 85%; padding: .6em .8em; border-radius: .9em .9em .9em .2em; background: var(--ec-lav1); font-size: .85em; }
+.u-bubble--me { align-self: flex-end; border-radius: .9em .9em .2em .9em; background: var(--ec-deep); color: var(--ec-bg); }
+.u-qr { width: 70%; aspect-ratio: 1; margin: 4% auto; border-radius: .6em;
+  background: repeating-conic-gradient(var(--ec-deep) 0 25%, var(--ec-raised) 0 50%) 0 0 / 22% 22%; box-shadow: 0 0 0 .5em var(--ec-raised), 0 0 0 calc(.5em + 1px) var(--ec-p16); }
+
+/* ───────── Dar kapsayıcılar (detay sayfası kapsayıcı sorgusu) ───────── */
+@container (max-width: 1000px) {
+  .cs-steps { grid-template-columns: repeat(3, minmax(0, 1fr)); row-gap: 12px; }
+  .cs-step:nth-child(3) .cs-step__link { display: none; }
+  .cs-quotes { grid-template-columns: 1fr 1fr; }
+  .cs-persona__grid { grid-template-columns: 1fr 1fr; }
+  .cs-persona__grid > section:last-child { grid-column: 1 / -1; }
+}
+@container (max-width: 760px) {
+  .cs-sec .cs-lead { grid-column: 1 / -1; margin-top: 12px; }
+  .cs-body { margin-top: 28px; }
+  .cs-stats, .cs-findings, .cs-notes, .cs-quotes, .cs-persona__grid { grid-template-columns: 1fr; }
+  .cs-steps { grid-template-columns: 1fr; }
+  .cs-step { grid-template-columns: 44px 1fr; align-items: center; }
+  .cs-step__link { right: auto; left: 30px; top: auto; bottom: -17px; transform: rotate(90deg); }
+  .cs-step:nth-child(3) .cs-step__link { display: grid; }
+  .cs-stat, .cs-card, .cs-persona { padding: 24px; }
+  .cs-emp { grid-template-columns: 1fr; padding-top: 64px; }
+  .cs-emp__q--0, .cs-emp__q--1, .cs-emp__q--2, .cs-emp__q--3 { padding: 24px; }
+  .cs-emp__center { top: 0; transform: translate(-50%, 0); width: 88px; height: 88px; box-shadow: 0 0 0 6px var(--ec-bg); }
+  .cs-sol__row { grid-template-columns: 1fr; }
+  .cs-sol__arrow { height: 36px; transform: rotate(90deg); }
+  .cs-persona__id { flex-direction: column; align-items: flex-start; }
+  .cs-quote--featured { padding: 28px; }
+}
+
+/* Azaltılmış hareket: şerit durur ve kartlar sabit bir ızgara olur; yükselmeler ve sayaçlar son halinde */
+@media (prefers-reduced-motion: reduce) {
+  .cs-mq { position: absolute; display: block; overflow: hidden; padding: 4%; -webkit-mask-image: none; mask-image: none; }
+  .cs-mq__row--1 { display: none; }
+  .cs-mq__row { height: 100%; }
+  .cs-mq__track { animation: none; width: auto; height: 100%; justify-content: center; }
+  .cs-mq__set { height: 100%; justify-content: center; padding: 0; gap: 3%; }
+  .cs-mq__card { width: auto; height: 100%; }
+  .cs-mq__set[aria-hidden="true"] { display: none; }
+  .cs-reveal.is-armed { opacity: 1; transform: none; transition: none; }
+  .is-armed .cs-grow, .is-armed .cs-grow-x, .is-armed .cs-click span { transition: none; }
+}
