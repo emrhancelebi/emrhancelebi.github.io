@@ -178,9 +178,6 @@ html.is-locked, html.is-locked body { overflow: hidden; }
 .ec-detail__sec p { white-space: pre-line; }
 
 /* Telefon kapakları: akışın üstünde, kenar maskelerinin altında tek tuval; dalışta tam ekran. */
-.phone-canvas { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; pointer-events: none; opacity: 0; transition: opacity var(--duration-l) var(--easing-standard); }
-.phone-canvas.is-on { opacity: 1; }
-.phone-canvas.is-dive { position: fixed; z-index: 70; }
 /* Proje galerisi (Çalışma Alanı'ndan): ilk görsel tam genişlik, kalanlar iki sütun. */
 .ec-detail__media.pf-gallery { grid-template-columns: 1fr 1fr; align-items: start; }
 .ec-detail__media.pf-gallery img { display: block; width: 100%; height: auto; border-radius: var(--radius-lg, 24px); background: var(--ec-lav1); }

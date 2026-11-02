@@ -230,9 +230,8 @@
     var hero = wrap.querySelector(".ec-detail__hero");
     if (hero && d.cover) {
       hero.classList.add("cs-hero");
-      /* Kapak: arkada gerçek ekranların aktığı şerit, önde telefon modeline giydirilmiş ana ekran */
-      hero.innerHTML = UICardMarquee(d.cover) + (d.cover.phone ? '<img class="cs-hero__phone" src="' + esc(d.cover.phone.image) + '" alt="' + esc(d.cover.phone.alt) + '" decoding="async">' : "");
-      if (d.cover.phone) hero.classList.add("cs-hero--phone");
+      /* Kapak: gerçek ekranların sağa aktığı şerit */
+      hero.innerHTML = UICardMarquee(d.cover);
     }
     var secs = [].slice.call(wrap.querySelectorAll(".ec-detail__sec"));
     var anchor = wrap.querySelector(".ec-detail__next");

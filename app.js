@@ -79,31 +79,55 @@
     g.textAlign = "left"; g.textBaseline = "alphabetic"; g.fillText(pad2(n), w * 0.07, w * 0.2); g.globalAlpha = 1;
     return c;
   }
-  /* Laptop ekranı dokusu için: kapak + düz telefon çizimi. */
-  function withFlatPhone(src) {
-    if (!W.PhoneCovers) return src;
-    var c = canvas(800, 1000), g = c.getContext("2d");
-    g.drawImage(src, 0, 0, 800, 1000); W.PhoneCovers.drawFlatPhone(g, 800, 1000);
+  /* Telefonlu kartın kapağı: sahnenin ortasında duran telefon, ekranında projenin ilk ekranı.
+     Çerçeve modelden bir kez çizilmiş şeffaf ekranlı PNG (Çalışma Alanı › mockup.html?frame=1);
+     FRAME ekranın çerçeve içindeki kutusu (0–1). Sayfada 3D model yüklenmez. */
+  var FRAME = { src: "assets/telefon-cerceve.png", x: 0.0321, y: 0.0132, w: 0.9374, h: 0.9736, aspect: 0.4802 };
+  function loadImg(src) {
+    return new Promise(function (res) { if (!src) return res(null); var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { res(null); }; im.src = src; });
+  }
+  var frameImg = null;
+  function phoneCover(n, tone, screen) {
+    var w = 800, h = 1000, c = coverStage(n, tone, w, h), g = c.getContext("2d");
+    var ph = h * 0.8, pw = ph * FRAME.aspect, px = (w - pw) / 2, py = h * 0.925 - ph;
+    var sx = px + FRAME.x * pw, sy = py + FRAME.y * ph, sw = FRAME.w * pw, sh = FRAME.h * ph;
+    g.save(); g.shadowColor = "rgba(16,50,115,.28)"; g.shadowBlur = 48; g.shadowOffsetY = 22;
+    g.fillStyle = "#1b1b1f"; rr(g, px + 4, py + 4, pw - 8, ph - 8, pw * 0.15); g.fill(); g.restore();
+    g.save(); rr(g, sx, sy, sw, sh, pw * 0.12); g.clip();
+    g.fillStyle = "#f9f2fc"; g.fillRect(sx, sy, sw, sh);
+    if (screen) { g.imageSmoothingQuality = "high"; g.drawImage(screen, sx, sy, sw, screen.naturalHeight * sw / screen.naturalWidth); } /* üstten hizalı */
+    else {
+      g.globalAlpha = 0.5; g.fillStyle = "#103273"; g.font = "300 " + Math.round(sw * 0.32) + "px Fraunces, Georgia, serif";
+      g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(pad2(n), sx + sw / 2, sy + sh / 2); g.globalAlpha = 1;
+    }
+    g.restore();
+    if (frameImg) g.drawImage(frameImg, px, py, pw, ph);
     return c;
   }
   var screenCovers = {};
-  /* Görseli olan projede kendi görseli, olmayanda tasarım sistemindeki gibi numaralı lavanta kapak. */
+  /* Görseli olan projede kendi görseli, olmayanda tasarım sistemindeki gibi numaralı lavanta kapak.
+     Telefonlu grupta kapak her zaman telefon; ekranında ilk ekran görüntüsü (yoksa kart görseli). */
   function buildCovers() {
-    GROUPS.forEach(function (gr) {
-      var list = screenCovers[gr.key] = [];
-      gr.items.forEach(function (p, i) {
-        var tone = TONES[i % 3], tall = gr.phone ? coverStage(p.num, tone, 800, 1000) : coverNum(p.num, tone, 800, 1000, 300);
-        list.push(gr.phone ? withFlatPhone(tall) : tall);
-        if (p.cardImage) {
+    return loadImg(FRAME.src).then(function (fi) {
+      frameImg = fi;
+      return Promise.all(GROUPS.map(function (gr) {
+        var list = screenCovers[gr.key] = [];
+        return Promise.all(gr.items.map(function (p, i) {
+          var tone = TONES[i % 3];
+          gr.detail[i].cover = p.coverImage || p.cardImage || coverNum(p.num, tone, 1600, 800, 360).toDataURL("image/jpeg", 0.9);
+          if (gr.phone) {
+            return loadImg(p.phoneScreens[0] || p.cardImage).then(function (im) {
+              var c = list[i] = phoneCover(p.num, tone, im);
+              gr.cards[i].cover = c.toDataURL("image/jpeg", 0.9);
+            });
+          }
+          var tall = list[i] = coverNum(p.num, tone, 800, 1000, 300);
+          if (!p.cardImage) { gr.cards[i].cover = tall.toDataURL("image/jpeg", 0.9); return; }
           gr.cards[i].cover = p.cardImage;
-          var img = new Image();
-          img.onload = function () { list[i] = gr.phone ? withFlatPhone(img) : img; if (scene) scene.redraw(); };
-          img.src = p.cardImage;
-        } else gr.cards[i].cover = tall.toDataURL("image/jpeg", 0.9);
-        gr.detail[i].cover = p.coverImage || p.cardImage || coverNum(p.num, tone, 1600, 800, 360).toDataURL("image/jpeg", 0.9);
-      });
-    });
-    if (scene) scene.redraw();
+          return loadImg(p.cardImage).then(function (im) { if (im) list[i] = im; });
+        }));
+      }));
+    }).then(function () { if (scene) scene.redraw(); });
   }
 
   /* ───────── Ekran dokusu (3D modelin ekranına çizilir) ─────────
@@ -378,24 +402,11 @@
     }
     return inner;
   }
-  /* Telefon sahnesi (phones.js): bir kez kurulur, telefonlu grup açıldıkça akışa bağlanır. */
-  var phoneStage;
-  function getPhoneStage() {
-    if (phoneStage === undefined) phoneStage = W.PhoneCovers && W.PhoneCovers.supported() && !cssMode ? new W.PhoneCovers.Stage({ url: "assets/models/telefon.glb" }) : null;
-    return phoneStage;
-  }
   function mountLoop() {
     var gr = GROUPS[groupIdx];
     loop = E.ProjectLoop.mount(pf.panel, { projects: gr.cards, onOpen: openDetail });
     loop.el.setAttribute("aria-label", gr.label + " projeleri");
     pf.panel.setAttribute("aria-labelledby", "pf-tab-" + gr.key);
-    var st = gr.phone ? getPhoneStage() : phoneStage;
-    if (st && gr.phone) {
-      var n = gr.items.length;
-      st.attach(loop.el, [].map.call(loop.el.querySelectorAll(".ec-card"), function (card, k) {
-        return { card: card, cover: card.querySelector(".ec-card__cover"), project: gr.items[k % n], key: gr.key + "-" + (k % n), variant: k % n };
-      }));
-    } else if (st) st.detach();
   }
   function visibleCards() {
     var w = hero.clientWidth;
@@ -416,7 +427,6 @@
     var old = loop;
     var out = reduced() ? null : old.el.animate([{ opacity: 1, translate: "0 0" }, { opacity: 0, translate: "-32px 0" }], { duration: 280, easing: EASE.standard, fill: "forwards" });
     Promise.resolve(out && out.finished).then(function () {
-      if (phoneStage) phoneStage.detach();
       old.destroy(); mountLoop();
       if (!reduced()) visibleCards().forEach(function (c, i) {
         c.animate([{ opacity: 0, translate: "0 32px" }, { opacity: 1, translate: "0 0" }], { duration: 640, easing: EASE.emphasized, delay: i * 70, fill: "backwards" });
@@ -425,26 +435,10 @@
     });
   }
 
-  /* Proje detayı. Telefonlu grupta: telefon ortaya gelip ekranı kaplayana kadar büyür, proje sayfası
-     aşağıdan kayarak gelir (içine girme). Diğer gruplarda tasarım sistemindeki gibi kart kapağı detayın kapağına uçar. */
+  /* Proje detayı: tasarım sistemindeki gibi kart kapağı detayın kapağına uçar. */
   function openDetail(p, i, coverEl) {
     if (detail || ui.phase !== "portfolio") return;
     ui.phase = "project"; loop.pause();
-    var gr = GROUPS[groupIdx], card = coverEl && coverEl.closest(".ec-card");
-    if (gr.phone && phoneStage && phoneStage.phones.length && !reduced()) {
-      var dive = phoneStage.diveInto(card, portal);
-      pf.fade = pf.inner.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 480, easing: EASE.standard, fill: "forwards", composite: "replace" });
-      var started = false;
-      function slideIn() {
-        if (started) return; started = true;
-        var host = mountDetail(i, null);
-        host.animate([{ transform: "translateY(100%)" }, { transform: "none" }], { duration: 900, easing: EASE.emphasized, fill: "backwards" })
-          .finished.then(function () { phoneStage.surface(); });
-      }
-      setTimeout(slideIn, 1050);
-      dive.then(function (ok) { if (!ok) slideIn(); });
-      return;
-    }
     var h = mountDetail(i, coverEl);
     if (!reduced()) h.animate([{ opacity: 0 }, { opacity: 1 }], { duration: E.motion.duration.m, easing: EASE.standard });
   }
@@ -489,7 +483,6 @@
   function closeDetail() {
     if (!detail) return;
     var d = detail; detail = null; d.mo.disconnect();
-    if (phoneStage) phoneStage.surface();
     if (pf.fade) { pf.fade.cancel(); pf.fade = null; }
     var a = d.host.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: reduced() ? "none" : "translateY(24px)" }],
       { duration: reduced() ? 200 : E.motion.duration.m, easing: EASE.standard, fill: "both" });
@@ -507,7 +500,7 @@
     D.documentElement.classList.add("is-locked");
     var el = lapEl(); el.removeAttribute("data-cursor-label"); el.setAttribute("aria-expanded", "true"); el.style.cursor = "";
     setLap("open"); fadeOutSide();
-    Promise.resolve(scene.open()).then(function () {
+    Promise.all([scene.open(), coversReady]).then(function () {
       var inner = buildPortfolio();
       if (cssMode) { inner.style.opacity = 1; return portal.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 420, fill: "both" }).finished; }
       return scene.enter(portal, hero, inner);
@@ -523,7 +516,6 @@
     var el = lapEl(), inner = pf.inner;
     var out = cssMode ? portal.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 320, fill: "both" }).finished : scene.exit(portal, hero, inner);
     out.then(function () {
-      if (phoneStage) phoneStage.detach();
       loop.destroy(); loop = null; portal.remove(); portal = null; pf = null;
       setLap("return"); fadeInSide();
       el.setAttribute("aria-expanded", "false");
@@ -555,5 +547,5 @@
   E.Cursor.mount(hero);
   W.addEventListener("resize", function () { if (ui.phase !== "closed") setLap("open"); });
   var fontsReady = D.fonts && D.fonts.load ? Promise.all(['300 100px Fraunces', '400 40px Fraunces', '400 20px Geist', '500 20px "Geist Mono"'].map(function (f) { return D.fonts.load(f).catch(function () {}); })) : Promise.resolve();
-  Promise.all([fontsReady, dataReady]).then(buildCovers);
+  var coversReady = Promise.all([fontsReady, dataReady]).then(buildCovers).catch(function () {});
 })();

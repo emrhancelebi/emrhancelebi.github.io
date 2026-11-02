@@ -169,20 +169,6 @@
 .cs-mq__card { width: clamp(64px, 12cqw, 210px); aspect-ratio: 9 / 15; border-radius: 22px; overflow: hidden; background: var(--ec-raised); box-shadow: 0 10px 24px -14px rgba(16, 50, 115, .35); flex: none; }
 .cs-mq__card img { width: 100%; height: 100%; object-fit: cover; object-position: top; display: block; }
 
-/* Telefonlu kapak: şerit geri çekilir, telefon mockup'ı önde, lacivert tabanlı yumuşak temas gölgesiyle */
-.cs-hero--phone .cs-mq { opacity: .5; }
-/* .ec-detail__hero img genel kuralı (tam kaplama) mockup'a uygulanmasın */
-.ec-detail__hero .cs-hero__phone {
-  position: absolute; left: 50%; top: 50%; z-index: 1;
-  height: 104%; width: auto; object-fit: contain; transform: translate(-50%, -50%);
-  filter: drop-shadow(0 28px 36px rgba(16, 50, 115, .32)) drop-shadow(0 6px 10px rgba(16, 50, 115, .18));
-  pointer-events: none; user-select: none;
-}
-@media (prefers-reduced-motion: no-preference) {
-  .cs-hero__phone { animation: cs-phone-in 1100ms var(--easing-emphasized) both; }
-  @keyframes cs-phone-in { from { opacity: 0; transform: translate(-50%, -44%) scale(.96); } to { opacity: 1; transform: translate(-50%, -50%); } }
-}
-
 /* Temsili ekran içeriği */
 .u-screen { box-sizing: border-box; height: 100%; padding: 10% 9%; display: flex; flex-direction: column; gap: 6%; font-size: clamp(8px, 1.05cqw, 13px); color: var(--ec-ink); }
 .u-status { margin: 0 !important; display: flex; justify-content: space-between; font-size: .8em; color: var(--ec-deep); }

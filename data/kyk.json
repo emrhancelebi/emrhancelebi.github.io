@@ -4,7 +4,6 @@
 
   "cover": {
     "label": "KYK Asistan arayüz ekranları",
-    "phone": { "image": "assets/projects/kyk/kapak-telefon.png", "alt": "KYK Asistan ana sayfa ekranı, telefon üzerinde" },
     "rows": [
       [
         { "title": "Ana sayfa", "image": "assets/projects/kyk/ana-sayfa.png" },
