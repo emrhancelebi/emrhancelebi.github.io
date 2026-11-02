@@ -123,9 +123,11 @@
     var ready = imgs.filter(function (im) { return im.complete && im.naturalWidth; });
     if (!ready.length) { g.fillStyle = C.bg; g.fillRect(0, 0, SW, SH); return; }
     var per = 2.6, t = now / 1000 / per, k = Math.floor(t) % ready.length, frac = t % 1, slide = easeInOut(clamp01((frac - 0.8) / 0.2));
+    /* Ekran görüntüleri genelde uzun (kaydırmalı); ekranın üstü görünsün diye üstten hizalanır. */
     function cover(im, x) {
       var s = Math.max(SW / im.naturalWidth, SH / im.naturalHeight), w = im.naturalWidth * s, h = im.naturalHeight * s;
-      g.drawImage(im, x + (SW - w) / 2, (SH - h) / 2, w, h);
+      g.fillStyle = C.bg; g.fillRect(x, 0, SW, SH);
+      g.drawImage(im, x + (SW - w) / 2, 0, w, h);
     }
     cover(ready[k], -slide * SW);
     if (slide > 0 && ready.length > 1) cover(ready[(k + 1) % ready.length], (1 - slide) * SW);

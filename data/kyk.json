@@ -3,22 +3,32 @@
   "persona": { "name": "Oğuz Kağan", "initials": "OK" },
 
   "cover": {
-    "label": "KYK Asistan arayüz ekranları (temsili)",
-    "note": "Temsili ekranlar; gerçek arayüz görselleri gelince 'image' alanına yol yazılacak.",
+    "label": "KYK Asistan arayüz ekranları",
+    "phone": { "image": "assets/projects/kyk/kapak-telefon.png", "alt": "KYK Asistan ana sayfa ekranı, telefon üzerinde" },
     "rows": [
       [
-        { "kind": "login", "title": "Hoş geldin", "image": "" },
-        { "kind": "dining", "title": "Yemekhane", "image": "" },
-        { "kind": "laundry", "title": "Çamaşırhane", "image": "" },
-        { "kind": "permit", "title": "İzin talebi", "image": "" },
-        { "kind": "home", "title": "Ana sayfa", "image": "" }
+        { "title": "Ana sayfa", "image": "assets/projects/kyk/ana-sayfa.png" },
+        { "title": "İzin talebi", "image": "assets/projects/kyk/izin-talebi.png" },
+        { "title": "Arıza bildirimi", "image": "assets/projects/kyk/ariza-bildirim.png" },
+        { "title": "Arıza bildirimi onayı", "image": "assets/projects/kyk/ariza-onay.png" },
+        { "title": "Çamaşırhane randevusu", "image": "assets/projects/kyk/camasirhane-randevu.png" },
+        { "title": "Çamaşırhane makine seçimi", "image": "assets/projects/kyk/camasirhane-makine.png" },
+        { "title": "Randevu özeti", "image": "assets/projects/kyk/randevu-ozeti.png" },
+        { "title": "Yurt menü takibi", "image": "assets/projects/kyk/menu-takibi.png" },
+        { "title": "Yurt ücreti ödeme", "image": "assets/projects/kyk/yurt-ucreti.png" },
+        { "title": "Yurt Time", "image": "assets/projects/kyk/yurt-time.png" }
       ],
       [
-        { "kind": "fault", "title": "Arıza bildir", "image": "" },
-        { "kind": "roommate", "title": "Oda arkadaşım", "image": "" },
-        { "kind": "support", "title": "Destek", "image": "" },
-        { "kind": "events", "title": "Etkinlikler", "image": "" },
-        { "kind": "qr", "title": "Giriş kartı", "image": "" }
+        { "title": "Asansör takip", "image": "assets/projects/kyk/asansor-takip.png" },
+        { "title": "Asansör detay", "image": "assets/projects/kyk/asansor-detay.png" },
+        { "title": "Spor salonu QR", "image": "assets/projects/kyk/spor-salonu-qr.png" },
+        { "title": "GSB Wi-Fi girişi", "image": "assets/projects/kyk/wifi-giris.png" },
+        { "title": "GSB Wi-Fi bağlı", "image": "assets/projects/kyk/wifi-bagli.png" },
+        { "title": "Yurt nakil işlemleri", "image": "assets/projects/kyk/yurt-nakil.png" },
+        { "title": "Yurt kayıt silme", "image": "assets/projects/kyk/kayit-silme.png" },
+        { "title": "Öneri, talep ve şikâyet", "image": "assets/projects/kyk/oneri-talep.png" },
+        { "title": "Hızlı talep oluştur", "image": "assets/projects/kyk/hizli-talep.png" },
+        { "title": "Hesabım", "image": "assets/projects/kyk/hesabim.png" }
       ]
     ]
   },

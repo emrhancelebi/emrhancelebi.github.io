@@ -228,7 +228,12 @@
      alt başlıklar girer. Proje galerisi (varsa) Persona'dan sonra kalır. */
   function render(wrap, d) {
     var hero = wrap.querySelector(".ec-detail__hero");
-    if (hero && d.cover) { hero.classList.add("cs-hero"); hero.innerHTML = UICardMarquee(d.cover); }
+    if (hero && d.cover) {
+      hero.classList.add("cs-hero");
+      /* Kapak: arkada gerçek ekranların aktığı şerit, önde telefon modeline giydirilmiş ana ekran */
+      hero.innerHTML = UICardMarquee(d.cover) + (d.cover.phone ? '<img class="cs-hero__phone" src="' + esc(d.cover.phone.image) + '" alt="' + esc(d.cover.phone.alt) + '" decoding="async">' : "");
+      if (d.cover.phone) hero.classList.add("cs-hero--phone");
+    }
     var secs = [].slice.call(wrap.querySelectorAll(".ec-detail__sec"));
     var anchor = wrap.querySelector(".ec-detail__next");
     function put(el) { if (anchor) wrap.insertBefore(el, anchor); else wrap.appendChild(el); }

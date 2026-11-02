@@ -20,7 +20,14 @@
           "cardImage": "",
           "coverImage": "",
           "gallery": [],
-          "phoneScreens": []
+          "phoneScreens": [
+            "assets/projects/kyk/ana-sayfa.png",
+            "assets/projects/kyk/hizli-talep.png",
+            "assets/projects/kyk/ariza-bildirim.png",
+            "assets/projects/kyk/camasirhane-randevu.png",
+            "assets/projects/kyk/menu-takibi.png",
+            "assets/projects/kyk/wifi-bagli.png"
+          ]
         },
         {
           "id": "ux-2",
