@@ -19,7 +19,18 @@
           "result": "",
           "cardImage": "",
           "coverImage": "",
-          "gallery": [],
+          "gallery": [
+            "assets/projects/kyk-asistan-galeri-mw5frn78.png",
+            "assets/projects/kyk-asistan-galeri-mw5frn7e.png",
+            "assets/projects/kyk-asistan-galeri-mw5frn7j.png",
+            "assets/projects/kyk-asistan-galeri-mw5frn7o.png",
+            "assets/projects/kyk-asistan-galeri-mw5frn7s.png",
+            "assets/projects/kyk-asistan-galeri-mw5frn7v.png",
+            "assets/projects/kyk-asistan-galeri-mw5frn81.png",
+            "assets/projects/kyk-asistan-galeri-mw5frn85.png",
+            "assets/projects/kyk-asistan-galeri-mw5frn89.png",
+            "assets/projects/kyk-asistan-galeri-mw5frn8e.png"
+          ],
           "phoneScreens": [
             "assets/projects/kyk/ana-sayfa.png",
             "assets/projects/kyk/hizli-talep.png",
