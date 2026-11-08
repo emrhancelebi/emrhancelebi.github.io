@@ -181,11 +181,46 @@ html.is-locked, html.is-locked body { overflow: hidden; }
 .pf .ec-card__meta { justify-content: flex-start; }
 /* İçeriği henüz olmayan projenin notu: şablon yerine, ikincil tonda tek cümle. */
 .ec-detail__intro.pf-soon { color: var(--ec-muted); max-width: 46ch; }
-/* Proje galerisi (Çalışma Alanı'ndan): ilk görsel tam genişlik, kalanlar iki sütun. */
-.ec-detail__media.pf-gallery { grid-template-columns: 1fr 1fr; align-items: start; }
-.ec-detail__media.pf-gallery img { display: block; width: 100%; height: auto; border-radius: var(--radius-lg, 24px); background: var(--ec-lav1); }
-.ec-detail__media.pf-gallery img:first-child { grid-column: 1 / -1; }
-@container (max-width: 640px) { .ec-detail__media.pf-gallery { grid-template-columns: 1fr; } }
+/* Proje galerisi (Çalışma Alanı'ndan): sakin bir küçük görsel ızgarası; görsel tıklanınca görüntüleyicide açılır. */
+.ec-detail__media.pf-gallery { grid-template-columns: repeat(auto-fill, minmax(168px, 1fr)); gap: 16px; align-items: start; }
+.pf-thumb { display: block; padding: 0; border: 0; border-radius: 16px; overflow: hidden; background: var(--ec-lav1); aspect-ratio: 4 / 3; cursor: zoom-in;
+  box-shadow: inset 0 0 0 1px var(--ec-p08); }
+.pf-thumb img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top; transition: transform var(--duration-m) var(--easing-emphasized), opacity var(--duration-s) var(--easing-standard); }
+.pf-thumb:hover img { transform: scale(1.04); }
+.pf-thumb:active img { opacity: .85; transition-duration: var(--duration-xs); }
+.pf-thumb:focus { outline: none; }
+.pf-thumb:focus-visible { outline: 2px solid var(--ec-deep); outline-offset: 3px; }
+@container (max-width: 640px) { .ec-detail__media.pf-gallery { grid-template-columns: repeat(auto-fill, minmax(124px, 1fr)); gap: 12px; } }
+
+/* Görüntüleyici: açık zemin, görsel ortada; yana kaydırma yalnız burada (scroll-snap + fareyle sürükleme). */
+.pf-viewer { position: fixed; inset: 0; z-index: 120; background: var(--ec-bg); }
+.pf-viewer__bar { position: absolute; inset: 0 0 auto; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 20px 32px; pointer-events: none; }
+.pf-viewer__bar > * { pointer-events: auto; }
+.pf-viewer__count { font: 500 12px/1 var(--ec-mono); letter-spacing: .14em; color: var(--ec-muted); }
+.pf-viewer__btn { display: grid; place-items: center; width: 44px; height: 44px; padding: 0; border-radius: 999px; border: 1px solid var(--ec-p16);
+  background: var(--ec-raised); color: var(--ec-ink); cursor: pointer;
+  transition: background var(--duration-s) var(--easing-standard), color var(--duration-s) var(--easing-standard), opacity var(--duration-s) var(--easing-standard); }
+.pf-viewer__btn:hover { background: var(--ec-deep); color: var(--ec-bg); border-color: var(--ec-deep); }
+.pf-viewer__btn:focus { outline: none; }
+.pf-viewer__btn:focus-visible { outline: 2px solid var(--ec-deep); outline-offset: 3px; }
+.pf-viewer__btn:disabled { opacity: .32; cursor: default; background: var(--ec-raised); color: var(--ec-ink); border-color: var(--ec-p16); }
+.pf-viewer__nav { position: absolute; top: 50%; z-index: 2; translate: 0 -50%; }
+.pf-viewer__nav--prev { left: 24px; }
+.pf-viewer__nav--next { right: 24px; }
+.pf-viewer__track { display: flex; height: 100%; overflow-x: auto; overflow-y: hidden; scroll-snap-type: x mandatory; overscroll-behavior: contain; scrollbar-width: none; cursor: grab; }
+.pf-viewer__track::-webkit-scrollbar { display: none; }
+.pf-viewer__track.is-drag { scroll-snap-type: none; cursor: grabbing; user-select: none; }
+.pf-viewer__slide { flex: 0 0 100%; box-sizing: border-box; height: 100%; margin: 0; padding: 88px 104px 56px; display: grid; place-items: center; scroll-snap-align: center; }
+/* yükseklik sınırı görüntü alanından: ızgara satırı içerik kadar büyüdüğü için %100 yetmiyor */
+.pf-viewer__slide img { max-width: 100%; max-height: calc(100vh - 144px); max-height: calc(100dvh - 144px); object-fit: contain; border-radius: 16px; box-shadow: 0 24px 48px -28px rgba(16, 50, 115, .35); user-select: none; -webkit-user-drag: none; cursor: default; }
+@media (max-width: 640px) {
+  .pf-viewer__bar { padding: 16px; }
+  .pf-viewer__slide { padding: 76px 16px 96px; }
+  .pf-viewer__slide img { max-height: calc(100vh - 172px); max-height: calc(100dvh - 172px); }
+  .pf-viewer__nav { top: auto; bottom: 24px; translate: none; }
+  .pf-viewer__nav--prev { left: calc(50% - 56px); }
+  .pf-viewer__nav--next { right: calc(50% - 56px); }
+}
 .ec-nav__name, .ec-nav__mid { white-space: nowrap; }
 @media (max-width: 480px) {
   .ec-nav { padding: 16px; }

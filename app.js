@@ -489,8 +489,16 @@
       });
       var media = wrap.querySelector(".ec-detail__media");
       if (media && pr.gallery.length) {
+        /* Galeri küçük görseller halinde durur; tıklanan görsel tam ekran görüntüleyicide açılır. */
         media.classList.add("pf-gallery");
-        media.innerHTML = pr.gallery.map(function (g) { return '<img src="' + esc(g) + '" alt="' + esc(pr.title) + ' görseli" loading="lazy">'; }).join("");
+        media.setAttribute("role", "list"); media.setAttribute("aria-label", pr.title + " görselleri");
+        media.innerHTML = pr.gallery.map(function (g, k) {
+          return '<button type="button" class="pf-thumb" role="listitem" data-k="' + k + '" data-cursor-label="AÇ" aria-label="' + esc(pr.title) + ' görseli ' + (k + 1) + ' / ' + pr.gallery.length + ', büyüt">' +
+            '<img src="' + esc(g) + '" alt="" loading="lazy" decoding="async"></button>';
+        }).join("");
+        media.addEventListener("click", function (ev) {
+          var b = ev.target.closest(".pf-thumb"); if (b) openViewer(pr.gallery, +b.getAttribute("data-k"), pr.title, b);
+        });
       } else if (media) media.remove();
       var intro = wrap.querySelector(".ec-detail__intro");
       var empty = !(pr.intro || pr.problem || pr.approach || pr.result || pr.gallery.length || pr.caseStudy);
@@ -512,6 +520,100 @@
     detail.mo = new MutationObserver(refresh); detail.mo.observe(host, { childList: true, subtree: true });
     setTimeout(function () { var b = host.querySelector(".ec-navbtn"); b && b.focus({ preventScroll: true }); }, 760);
     return host;
+  }
+
+  /* ───────── Görsel görüntüleyici: galeriden açılır; yana kaydırınca (dokunma, trackpad, fareyle sürükleme,
+     oklar) diğer görsele geçer. Kaydırma yalnız burada; sayfanın kendisinde yatay hareket yok. ───────── */
+  var ICON = {
+    close: '<svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" fill="none"/></svg>',
+    prev: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>',
+    next: '<svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" fill="none"/></svg>'
+  };
+  function openViewer(list, start, title, returnEl) {
+    var n = list.length, idx = start, closing = false;
+    var v = D.createElement("div"); v.className = "pf-viewer";
+    v.setAttribute("role", "dialog"); v.setAttribute("aria-modal", "true"); v.setAttribute("aria-label", title + " görselleri");
+    v.innerHTML = '<div class="pf-viewer__bar"><span class="pf-viewer__count" aria-live="polite"></span>' +
+      '<button type="button" class="pf-viewer__btn pf-viewer__close" aria-label="Görüntüleyiciyi kapat">' + ICON.close + "</button></div>" +
+      '<div class="pf-viewer__track">' + list.map(function (src, k) {
+        return '<figure class="pf-viewer__slide"><img src="' + esc(src) + '" alt="' + esc(title) + " görseli " + (k + 1) + " / " + n + '" decoding="async" draggable="false"' + (Math.abs(k - start) > 1 ? ' loading="lazy"' : "") + "></figure>";
+      }).join("") + "</div>" +
+      (n > 1 ? '<button type="button" class="pf-viewer__btn pf-viewer__nav pf-viewer__nav--prev" aria-label="Önceki görsel">' + ICON.prev + "</button>" +
+        '<button type="button" class="pf-viewer__btn pf-viewer__nav pf-viewer__nav--next" aria-label="Sonraki görsel">' + ICON.next + "</button>" : "");
+    D.body.appendChild(v);
+    var track = v.querySelector(".pf-viewer__track"), count = v.querySelector(".pf-viewer__count");
+    var prev = v.querySelector(".pf-viewer__nav--prev"), next = v.querySelector(".pf-viewer__nav--next");
+    function sync() {
+      count.textContent = (idx + 1) + " / " + n;
+      if (prev) { prev.disabled = idx === 0; next.disabled = idx === n - 1; }
+    }
+    function go(k, instant) {
+      idx = Math.max(0, Math.min(n - 1, k)); sync();
+      track.scrollTo({ left: idx * track.clientWidth, behavior: instant || reduced() ? "auto" : "smooth" });
+    }
+    track.scrollLeft = start * track.clientWidth; sync();
+    var raf = 0;
+    track.addEventListener("scroll", function () {
+      if (raf) return;
+      raf = requestAnimationFrame(function () { raf = 0; var k = Math.round(track.scrollLeft / track.clientWidth); if (k !== idx && !drag) { idx = k; sync(); } });
+    }, { passive: true });
+    /* Fareyle sürükleme (dokunma ve trackpad tarayıcının kendi kaydırmasıyla çalışır) */
+    var drag = null, dragged = false;
+    track.addEventListener("pointerdown", function (ev) {
+      if (ev.pointerType !== "mouse" || ev.button !== 0) return;
+      drag = { x: ev.clientX, left: track.scrollLeft }; dragged = false;
+      track.classList.add("is-drag"); track.setPointerCapture(ev.pointerId);
+    });
+    track.addEventListener("pointermove", function (ev) {
+      if (!drag) return;
+      var dx = ev.clientX - drag.x; if (Math.abs(dx) > 4) dragged = true;
+      track.scrollLeft = drag.left - dx;
+    });
+    function endDrag(ev) {
+      if (!drag) return;
+      var dx = ev.clientX - drag.x; drag = null; track.classList.remove("is-drag");
+      go(Math.abs(dx) > 60 ? idx + (dx < 0 ? 1 : -1) : idx);
+    }
+    track.addEventListener("pointerup", endDrag); track.addEventListener("pointercancel", endDrag);
+    /* Görselin dışındaki boşluğa tıklamak kapatır */
+    track.addEventListener("click", function (ev) { if (!dragged && ev.target.classList.contains("pf-viewer__slide")) close(); });
+    v.querySelector(".pf-viewer__close").addEventListener("click", close);
+    if (prev) { prev.addEventListener("click", function () { go(idx - 1); }); next.addEventListener("click", function () { go(idx + 1); }); }
+    /* Tuşlar belge düzeyinde, yakalama aşamasında dinlenir: sürükleme gibi bir tıklama odağı görüntüleyiciden
+       düşürse bile Esc yalnız görüntüleyiciyi kapatır, arkadaki proje sayfasını değil. */
+    function onKey(ev) {
+      if (ev.key === "Escape") { ev.stopPropagation(); ev.preventDefault(); close(); }
+      else if (ev.key === "ArrowRight") { ev.preventDefault(); go(idx + 1); }
+      else if (ev.key === "ArrowLeft") { ev.preventDefault(); go(idx - 1); }
+      else if (ev.key === "Home") { ev.preventDefault(); go(0); }
+      else if (ev.key === "End") { ev.preventDefault(); go(n - 1); }
+      else if (ev.key === "Tab") {
+        var f = [].filter.call(v.querySelectorAll("button"), function (b) { return !b.disabled; });
+        var a = f.indexOf(D.activeElement);
+        if (a < 0) { ev.preventDefault(); f[ev.shiftKey ? f.length - 1 : 0].focus(); }
+        else if (ev.shiftKey && a === 0) { ev.preventDefault(); f[f.length - 1].focus(); }
+        else if (!ev.shiftKey && a === f.length - 1) { ev.preventDefault(); f[0].focus(); }
+      }
+    }
+    D.addEventListener("keydown", onKey, true);
+    function onResize() { track.scrollLeft = idx * track.clientWidth; }
+    W.addEventListener("resize", onResize);
+    v.querySelector(".pf-viewer__close").focus({ preventScroll: true });
+    if (!reduced()) {
+      v.animate([{ opacity: 0 }, { opacity: 1 }], { duration: E.motion.duration.m, easing: EASE.standard });
+      track.animate([{ transform: "scale(.97)" }, { transform: "none" }], { duration: E.motion.duration.m, easing: EASE.emphasized });
+    }
+    function close() {
+      if (closing) return; closing = true;
+      W.removeEventListener("resize", onResize); D.removeEventListener("keydown", onKey, true);
+      var a = v.animate([{ opacity: 1 }, { opacity: 0 }], { duration: reduced() ? 120 : 220, easing: EASE.standard, fill: "forwards" });
+      a.finished.then(function () {
+        v.remove();
+        /* odak, en son bakılan görselin küçüğüne döner; kullanıcı galeride kaldığı yerden devam eder */
+        var back = returnEl && returnEl.parentNode ? returnEl.parentNode.querySelector('.pf-thumb[data-k="' + idx + '"]') || returnEl : returnEl;
+        if (back && back.isConnected) back.focus({ preventScroll: true });
+      });
+    }
   }
   function closeDetail() {
     if (!detail) return;

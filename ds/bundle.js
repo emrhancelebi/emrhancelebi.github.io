@@ -4746,7 +4746,14 @@ window.EC_LAPTOP_GLTF = "{\"asset\":{\"generator\":\"glTF-Transform v3.10.1\",\"
     var list = [anim(g, [{ left: a.left + "px", top: a.top + "px", width: a.width + "px", height: a.height + "px", borderRadius: fromR },
       { left: b.left + "px", top: b.top + "px", width: b.width + "px", height: b.height + "px", borderRadius: toR }], d, EASE.emphasized)];
     if (num && toNum) list.push(anim(num, [{ fontSize: getComputedStyle(num).fontSize }, { fontSize: getComputedStyle(toNum).fontSize }], d, EASE.emphasized));
-    return done(list).then(function () { toEl.style.visibility = ""; g.remove(); });
+    /* İniş: hedef kapak (çoğu zaman başka bir görsel) çözülene kadar kopya yerinde kalır, sonra opaklığı
+       azalarak çekilir; böylece kapak bir anda belirmez, alttan yumuşakça görünür. */
+    return done(list).then(function () {
+      toEl.style.visibility = "";
+      var im = toEl.querySelector("img");
+      var ready = im && im.decode ? Promise.race([im.decode().catch(function () {}), wait(700)]) : Promise.resolve();
+      return ready.then(function () { return done([anim(g, [{ opacity: 1 }, { opacity: 0 }], DUR.m, EASE.standard)]); });
+    }).then(function () { g.remove(); });
   }
   var ProjectDetail = {
     mount: function (el, o) {
