@@ -177,7 +177,10 @@ html.is-locked, html.is-locked body { overflow: hidden; }
 .ec-detail__hero img, .ec-detail__nextcover img { width: 100%; height: 100%; object-fit: cover; display: block; }
 .ec-detail__sec p { white-space: pre-line; }
 
-/* Telefon kapakları: akışın üstünde, kenar maskelerinin altında tek tuval; dalışta tam ekran. */
+/* Kartta kategori yazmadığı için yıl, başlığın altında sola hizalı durur. */
+.pf .ec-card__meta { justify-content: flex-start; }
+/* İçeriği henüz olmayan projenin notu: şablon yerine, ikincil tonda tek cümle. */
+.ec-detail__intro.pf-soon { color: var(--ec-muted); max-width: 46ch; }
 /* Proje galerisi (Çalışma Alanı'ndan): ilk görsel tam genişlik, kalanlar iki sütun. */
 .ec-detail__media.pf-gallery { grid-template-columns: 1fr 1fr; align-items: start; }
 .ec-detail__media.pf-gallery img { display: block; width: 100%; height: auto; border-radius: var(--radius-lg, 24px); background: var(--ec-lav1); }

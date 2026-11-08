@@ -26,18 +26,24 @@
     { id: "kimlik", label: "Kurumsal Kimlik Tasarımı", projects: [1, 2, 3, 4].map(function (n) { return stub("kimlik", "KURUMSAL KİMLİK", n); }) }
   ] };
   var GROUPS = [];
+  /* Çalışma Alanı'nın yeni projeye yazdığı yer tutucu; ziyaretçiye gösterilmez. */
+  var STUB_INTRO = "Bu projenin açıklaması yakında eklenecek.";
+  /* Portfolyo altındaki yönlendirme; laptop ekranı dokusunda da aynısı çizilir. */
+  var PF_HINT = "İncelemek için bir projeye tıkla.";
   /* Kart 4:5 dikey, detay 2:1 yatay kapak ister; her grup iki kopya tutar. */
   function setData(d) {
     GROUPS = (d && d.groups || []).filter(function (g) { return g && g.projects && g.projects.length; }).map(function (g, gi) {
       var items = g.projects.map(function (p, i) {
+        var intro = (p.intro || "").trim();
         return { title: p.title || "Adsız proje", num: i + 1, category: p.category || "", year: p.year || "", role: p.role || "", tools: p.tools || "",
-          intro: p.intro || "", problem: p.problem || "", approach: p.approach || "", result: p.result || "",
+          intro: intro === STUB_INTRO ? "" : intro, problem: p.problem || "", approach: p.approach || "", result: p.result || "",
           gallery: (p.gallery || []).filter(Boolean), cardImage: p.cardImage || "", coverImage: p.coverImage || "",
           phoneScreens: (p.phoneScreens || []).filter(Boolean), caseStudy: p.caseStudy || "" };
       });
       var key = String(g.id || "g" + gi).toLowerCase().replace(/[^a-z0-9-]+/g, "-") || "g" + gi;
+      /* Kartta kategori yazmaz: sekme zaten grubu söylüyor, her kartta tekrarı gürültü. */
       return { key: key, label: g.label || "Grup", items: items, phone: g.device === "phone",
-        cards: items.map(function (p) { return Object.assign({}, p); }), detail: items.map(function (p) { return Object.assign({}, p); }) };
+        cards: items.map(function (p) { return Object.assign({}, p, { category: "" }); }), detail: items.map(function (p) { return Object.assign({}, p); }) };
     });
     if (!GROUPS.length && d !== FALLBACK) setData(FALLBACK);
   }
@@ -59,24 +65,23 @@
     g.beginPath(); g.moveTo(x + r, y); g.arcTo(x + w, y, x + w, y + h, r); g.arcTo(x + w, y + h, x, y + h, r);
     g.arcTo(x, y + h, x, y, r); g.arcTo(x, y, x + w, y, r); g.closePath();
   }
-  function pad2(n) { return (n < 10 ? "0" : "") + n; }
-  /* Yer tutucu: tasarım sistemindeki kart kapağı gibi lavanta tonu ve Fraunces numara. */
-  function coverNum(n, tone, w, h, size) {
-    var c = canvas(w, h), g = c.getContext("2d");
+  function toneFill(g, tone, w, h) {
     g.fillStyle = tone; g.fillRect(0, 0, w, h);
     if (tone === TONES[2]) { g.strokeStyle = "rgba(37,73,134,.16)"; g.lineWidth = 4; g.strokeRect(2, 2, w - 4, h - 4); }
-    g.globalAlpha = 0.9; g.fillStyle = "#103273"; g.font = '300 ' + size + 'px Fraunces, Georgia, serif';
-    g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(pad2(n), w / 2, h / 2); g.globalAlpha = 1;
+  }
+  /* Görseli henüz olmayan proje: dev sıra numarası yerine, ne olduğunu dürüstçe söyleyen sakin bir kapak. */
+  function coverSoon(tone, w, h) {
+    var c = canvas(w, h), g = c.getContext("2d");
+    toneFill(g, tone, w, h);
+    g.fillStyle = "#254986"; g.globalAlpha = 0.72; g.font = "300 " + Math.round(Math.min(w, h * 1.25) * 0.064) + "px Fraunces, Georgia, serif";
+    g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("Hazırlanıyor", w / 2, h / 2); g.globalAlpha = 1;
     return c;
   }
-  /* Telefonlu kartın kapağı bir sahne: numara sol üstte küçülür, ortada telefonun basacağı yumuşak temas gölgesi. */
-  function coverStage(n, tone, w, h) {
+  /* Telefonlu kartın kapağı bir sahne: ortada telefonun basacağı yumuşak temas gölgesi. */
+  function coverStage(tone, w, h) {
     var c = canvas(w, h), g = c.getContext("2d");
-    g.fillStyle = tone; g.fillRect(0, 0, w, h);
-    if (tone === TONES[2]) { g.strokeStyle = "rgba(37,73,134,.16)"; g.lineWidth = 4; g.strokeRect(2, 2, w - 4, h - 4); }
+    toneFill(g, tone, w, h);
     g.fillStyle = "rgba(16,50,115,.12)"; g.beginPath(); g.ellipse(w / 2, h * 0.935, w * 0.2, h * 0.018, 0, 0, Math.PI * 2); g.fill();
-    g.globalAlpha = 0.9; g.fillStyle = "#103273"; g.font = "300 " + Math.round(w * 0.16) + "px Fraunces, Georgia, serif";
-    g.textAlign = "left"; g.textBaseline = "alphabetic"; g.fillText(pad2(n), w * 0.07, w * 0.2); g.globalAlpha = 1;
     return c;
   }
   /* Telefonlu kartın kapağı: sahnenin ortasında duran telefon, ekranında projenin ilk ekranı.
@@ -87,8 +92,8 @@
     return new Promise(function (res) { if (!src) return res(null); var im = new Image(); im.onload = function () { res(im); }; im.onerror = function () { res(null); }; im.src = src; });
   }
   var frameImg = null;
-  function phoneCover(n, tone, screen) {
-    var w = 800, h = 1000, c = coverStage(n, tone, w, h), g = c.getContext("2d");
+  function phoneCover(tone, screen) {
+    var w = 800, h = 1000, c = coverStage(tone, w, h), g = c.getContext("2d");
     var ph = h * 0.8, pw = ph * FRAME.aspect, px = (w - pw) / 2, py = h * 0.925 - ph;
     var sx = px + FRAME.x * pw, sy = py + FRAME.y * ph, sw = FRAME.w * pw, sh = FRAME.h * ph;
     g.save(); g.shadowColor = "rgba(16,50,115,.28)"; g.shadowBlur = 48; g.shadowOffsetY = 22;
@@ -97,15 +102,15 @@
     g.fillStyle = "#f9f2fc"; g.fillRect(sx, sy, sw, sh);
     if (screen) { g.imageSmoothingQuality = "high"; g.drawImage(screen, sx, sy, sw, screen.naturalHeight * sw / screen.naturalWidth); } /* üstten hizalı */
     else {
-      g.globalAlpha = 0.5; g.fillStyle = "#103273"; g.font = "300 " + Math.round(sw * 0.32) + "px Fraunces, Georgia, serif";
-      g.textAlign = "center"; g.textBaseline = "middle"; g.fillText(pad2(n), sx + sw / 2, sy + sh / 2); g.globalAlpha = 1;
+      g.globalAlpha = 0.72; g.fillStyle = "#254986"; g.font = "300 " + Math.round(sw * 0.12) + "px Fraunces, Georgia, serif";
+      g.textAlign = "center"; g.textBaseline = "middle"; g.fillText("Hazırlanıyor", sx + sw / 2, sy + sh / 2); g.globalAlpha = 1;
     }
     g.restore();
     if (frameImg) g.drawImage(frameImg, px, py, pw, ph);
     return c;
   }
   var screenCovers = {};
-  /* Görseli olan projede kendi görseli, olmayanda tasarım sistemindeki gibi numaralı lavanta kapak.
+  /* Görseli olan projede kendi görseli (kart görseli yoksa galerinin ilki), olmayanda "Hazırlanıyor" kapağı.
      Telefonlu grupta kapak her zaman telefon; ekranında ilk ekran görüntüsü (yoksa kart görseli). */
   /* Çizilen kapaklar data URL yerine blob URL olur (uzun dizgeler HTML'e gömülmez) ve portfolyo açılmadan
      önce çözülür; böylece laptop'a girerken kartlar kare kaçırmadan belirir. */
@@ -127,18 +132,19 @@
         var list = screenCovers[gr.key] = [];
         return Promise.all(gr.items.map(function (p, i) {
           var tone = TONES[i % 3], jobs = [];
-          if (p.coverImage || p.cardImage) gr.detail[i].cover = p.coverImage || p.cardImage;
-          else jobs.push(blobUrl(coverNum(p.num, tone, 1600, 800, 360)).then(function (u) { gr.detail[i].cover = u; }));
+          var cardImg = p.cardImage || (gr.phone ? "" : p.gallery[0] || ""), coverImg = p.coverImage || cardImg;
+          if (coverImg) gr.detail[i].cover = coverImg;
+          else jobs.push(blobUrl(coverSoon(tone, 1600, 800)).then(function (u) { gr.detail[i].cover = u; }));
           if (gr.phone) {
             jobs.push(loadImg(p.phoneScreens[0] || p.cardImage).then(function (im) {
-              return blobUrl(list[i] = phoneCover(p.num, tone, im));
+              return blobUrl(list[i] = phoneCover(tone, im));
             }).then(function (u) { gr.cards[i].cover = u; return predecode(u); }));
           } else {
-            var tall = list[i] = coverNum(p.num, tone, 800, 1000, 300);
-            if (!p.cardImage) jobs.push(blobUrl(tall).then(function (u) { gr.cards[i].cover = u; return predecode(u); }));
+            var tall = list[i] = coverSoon(tone, 800, 1000);
+            if (!cardImg) jobs.push(blobUrl(tall).then(function (u) { gr.cards[i].cover = u; return predecode(u); }));
             else {
-              gr.cards[i].cover = p.cardImage;
-              jobs.push(loadImg(p.cardImage).then(function (im) { if (im) list[i] = im; return predecode(p.cardImage); }));
+              gr.cards[i].cover = cardImg;
+              jobs.push(loadImg(cardImg).then(function (im) { if (im) list[i] = im; return predecode(cardImg); }));
             }
           }
           return Promise.all(jobs);
@@ -198,7 +204,7 @@
       g.fillText(p.category, x + 4, y + LAY.cardH + LAY.metaY); g.textAlign = "right"; g.fillText(p.year, x + LAY.cardW - 4, y + LAY.cardH + LAY.metaY); g.textAlign = "left";
     }
     g.globalAlpha = A; g.fillStyle = "#516899"; g.font = '400 14px Geist, system-ui, sans-serif';
-    g.fillText("Sürükle, kaydır ya da sadece izle.", LAY.padX, LAY.captionY);
+    g.fillText(PF_HINT, LAY.padX, LAY.captionY);
     g.restore(); g.globalAlpha = 1;
   }
 
@@ -396,7 +402,7 @@
         return '<button type="button" class="pf-tab" role="tab" id="pf-tab-' + gr.key + '" aria-controls="pfPanel" aria-selected="' + (k === groupIdx) + '" tabindex="' + (k === groupIdx ? 0 : -1) + '">' + esc(gr.label) + "</button>";
       }).join("") + "</div>";
     var panel = D.createElement("div"); panel.className = "ec-portal__loop"; panel.id = "pfPanel"; panel.setAttribute("role", "tabpanel");
-    var foot = D.createElement("p"); foot.className = "ec-t-caption pf__foot"; foot.textContent = "Sürükle, kaydır ya da sadece izle. Liste hiç bitmez.";
+    var foot = D.createElement("p"); foot.className = "ec-t-caption pf__foot"; foot.textContent = PF_HINT;
     inner.appendChild(head); inner.appendChild(panel); inner.appendChild(foot);
     portal.appendChild(inner); hero.appendChild(portal);
 
@@ -466,23 +472,32 @@
     portal.appendChild(host);
     detail = { host: host, view: E.ProjectDetail.mount(host, { projects: GROUPS[groupIdx].detail, index: i, fromEl: fromEl || undefined, onBack: closeDetail }) };
     /* Sistemin yer tutucu footer'ı yerine ana sayfadaki iletişim bölümü; "Sonraki proje" sayfayı yeniden çizdiğinde de. */
-    /* Şablondaki yer tutucu bölümleri projenin kendi metin ve galerisiyle doldurur. Projeye ait hiç içerik
-       yoksa şablon olduğu gibi kalır; içerik varsa boş bölümler gizlenir. */
+    /* Şablondaki bölümleri projenin kendi metin ve galerisiyle doldurur. Şablonun yönerge metinleri
+       ("Bu alana … gelir", "GÖRSEL · 4:3") ve boş künye alanları ziyaretçiye hiç gösterilmez; projede henüz
+       içerik yoksa yerine dürüst bir "hazırlanıyor" notu konur. */
     function hydrate() {
       var wrap = host.querySelector(".ec-detail__wrap"); if (!wrap || wrap.hasAttribute("data-h")) return;
       wrap.setAttribute("data-h", "");
       var pr = GROUPS[groupIdx].detail[detail ? detail.view.index : i]; if (!pr) return;
-      var real = !!(pr.problem || pr.approach || pr.result || pr.gallery.length);
+      [].forEach.call(wrap.querySelectorAll(".ec-detail__meta > div"), function (row) {
+        var dd = row.querySelector("dd"); if (dd && /^\s*(—|-)?\s*$/.test(dd.textContent)) row.remove();
+      });
       var secs = [].slice.call(wrap.querySelectorAll(".ec-detail__sec")); // Problem, Yaklaşım, Sonuç
       [pr.problem, pr.approach, pr.result].forEach(function (t, k) {
         if (!secs[k]) return;
-        if (t) secs[k].querySelector("p").textContent = t; else if (real) secs[k].remove();
+        if (t) secs[k].querySelector("p").textContent = t; else secs[k].remove();
       });
       var media = wrap.querySelector(".ec-detail__media");
       if (media && pr.gallery.length) {
         media.classList.add("pf-gallery");
         media.innerHTML = pr.gallery.map(function (g) { return '<img src="' + esc(g) + '" alt="' + esc(pr.title) + ' görseli" loading="lazy">'; }).join("");
-      } else if (media && real) media.remove();
+      } else if (media) media.remove();
+      var intro = wrap.querySelector(".ec-detail__intro");
+      var empty = !(pr.intro || pr.problem || pr.approach || pr.result || pr.gallery.length || pr.caseStudy);
+      if (intro && empty) {
+        intro.classList.add("pf-soon");
+        intro.textContent = "Bu projenin vaka çalışmasını hazırlıyorum. Süreç, kararlar ve sonuçlar tamamlandığında burada olacak.";
+      } else if (intro && !pr.intro) intro.remove();
       /* Vaka çalışması verisi olan projede (projects.json → caseStudy) bölümler casestudy.js ile kurulur. */
       if (pr.caseStudy && W.CaseStudy) {
         W.CaseStudy.load(pr.caseStudy).then(function (d) { if (wrap.isConnected) W.CaseStudy.render(wrap, d); })
