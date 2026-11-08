@@ -107,24 +107,41 @@
   var screenCovers = {};
   /* Görseli olan projede kendi görseli, olmayanda tasarım sistemindeki gibi numaralı lavanta kapak.
      Telefonlu grupta kapak her zaman telefon; ekranında ilk ekran görüntüsü (yoksa kart görseli). */
+  /* Çizilen kapaklar data URL yerine blob URL olur (uzun dizgeler HTML'e gömülmez) ve portfolyo açılmadan
+     önce çözülür; böylece laptop'a girerken kartlar kare kaçırmadan belirir. */
+  function blobUrl(c) {
+    return new Promise(function (res) {
+      if (!c.toBlob || !W.URL) return res(c.toDataURL("image/jpeg", 0.9));
+      c.toBlob(function (b) { res(b ? URL.createObjectURL(b) : c.toDataURL("image/jpeg", 0.9)); }, "image/jpeg", 0.9);
+    });
+  }
+  var decoded = [];
+  function predecode(src) {
+    var im = new Image(); im.src = src; decoded.push(im);
+    return im.decode ? im.decode().catch(function () {}) : null;
+  }
   function buildCovers() {
     return loadImg(FRAME.src).then(function (fi) {
       frameImg = fi;
       return Promise.all(GROUPS.map(function (gr) {
         var list = screenCovers[gr.key] = [];
         return Promise.all(gr.items.map(function (p, i) {
-          var tone = TONES[i % 3];
-          gr.detail[i].cover = p.coverImage || p.cardImage || coverNum(p.num, tone, 1600, 800, 360).toDataURL("image/jpeg", 0.9);
+          var tone = TONES[i % 3], jobs = [];
+          if (p.coverImage || p.cardImage) gr.detail[i].cover = p.coverImage || p.cardImage;
+          else jobs.push(blobUrl(coverNum(p.num, tone, 1600, 800, 360)).then(function (u) { gr.detail[i].cover = u; }));
           if (gr.phone) {
-            return loadImg(p.phoneScreens[0] || p.cardImage).then(function (im) {
-              var c = list[i] = phoneCover(p.num, tone, im);
-              gr.cards[i].cover = c.toDataURL("image/jpeg", 0.9);
-            });
+            jobs.push(loadImg(p.phoneScreens[0] || p.cardImage).then(function (im) {
+              return blobUrl(list[i] = phoneCover(p.num, tone, im));
+            }).then(function (u) { gr.cards[i].cover = u; return predecode(u); }));
+          } else {
+            var tall = list[i] = coverNum(p.num, tone, 800, 1000, 300);
+            if (!p.cardImage) jobs.push(blobUrl(tall).then(function (u) { gr.cards[i].cover = u; return predecode(u); }));
+            else {
+              gr.cards[i].cover = p.cardImage;
+              jobs.push(loadImg(p.cardImage).then(function (im) { if (im) list[i] = im; return predecode(p.cardImage); }));
+            }
           }
-          var tall = list[i] = coverNum(p.num, tone, 800, 1000, 300);
-          if (!p.cardImage) { gr.cards[i].cover = tall.toDataURL("image/jpeg", 0.9); return; }
-          gr.cards[i].cover = p.cardImage;
-          return loadImg(p.cardImage).then(function (im) { if (im) list[i] = im; });
+          return Promise.all(jobs);
         }));
       }));
     }).then(function () { if (scene) scene.redraw(); });
@@ -228,12 +245,13 @@
     closeSkill();
     if (reduced()) { [right, skills, label].forEach(function (el) { el.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 200, fill: "both" }); }); return; }
     label.animate([{ opacity: 1, translate: "0 0" }, { opacity: 0, translate: "0 -10px" }], { duration: 260, easing: EASE.standard, fill: "both" });
-    right.animate([{ opacity: 1, transform: "none", filter: "blur(0px)" }, { opacity: 0, transform: "translateX(40px)", filter: "blur(4px)" }],
+    /* blur yok: büyük metin katmanında filtre animasyonu tümleşik GPU'larda laptop açılışını kasıyor */
+    right.animate([{ opacity: 1, transform: "none" }, { opacity: 0, transform: "translateX(40px)" }],
       { duration: 420, easing: EASE.standard, fill: "both" });
     skills.animate([{ opacity: 1, translate: "0 0" }, { opacity: 0, translate: "0 24px" }], { duration: 420, easing: EASE.standard, fill: "both" });
   }
   function fadeInSide() {
-    right.animate([{ opacity: 0, transform: reduced() ? "none" : "translateX(40px)", filter: reduced() ? "none" : "blur(4px)" }, { opacity: 1, transform: "none", filter: "blur(0px)" }],
+    right.animate([{ opacity: 0, transform: reduced() ? "none" : "translateX(40px)" }, { opacity: 1, transform: "none" }],
       { duration: reduced() ? 220 : 640, easing: EASE.emphasized, delay: reduced() ? 0 : 900, fill: "both" });
     skills.animate([{ opacity: 0, translate: reduced() ? "0 0" : "0 24px" }, { opacity: 1, translate: "0 0" }],
       { duration: reduced() ? 220 : 640, easing: EASE.emphasized, delay: reduced() ? 0 : 1020, fill: "both" });

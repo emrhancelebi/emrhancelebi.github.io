@@ -4475,11 +4475,21 @@ window.EC_LAPTOP_GLTF = "{\"asset\":{\"generator\":\"glTF-Transform v3.10.1\",\"
 
       /* ekran dokusu: portal düzeninin ölçekli bir kopyası, böylece kamera girdiğinde DOM sürümüne dikişsiz geçilir */
       var SW = 1512, SH = 1000, sc2 = D.createElement("canvas"); sc2.width = SW; sc2.height = SH;
-      var g = sc2.getContext("2d"), tex = new T.CanvasTexture(sc2);
+      var g = sc2.getContext("2d", { willReadFrequently: true }), tex = new T.CanvasTexture(sc2); /* CPU tuvali: WebGL yüklemesi GPU’dan geri okuma beklemez */
       tex.encoding = T.sRGBEncoding; tex.anisotropy = 8;
+      /* Laptop masadayken ekran küçük görünür: içerik 2/3 çözünürlüklü dokuya çizilir (yüklemesi ~2,25 kat ucuz).
+         Kamera ekrana girmeye başlayınca tam çözünürlüklü dokuya geçilir. */
+      var LW = Math.round(SW * 2 / 3), LH = Math.round(SH * 2 / 3), scL = D.createElement("canvas"); scL.width = LW; scL.height = LH;
+      var gL = scL.getContext("2d", { willReadFrequently: true }), texL = new T.CanvasTexture(scL);
+      texL.encoding = T.sRGBEncoding; texL.anisotropy = 8;
+      var hiRes = false, screenMat = null;
       var TONES = ["#f1e6f8", "#e6d7f1", "#fdf9fe"];
       function drawScreen() {
-        if (o.drawScreen) { o.drawScreen(g, SW, SH, S); tex.needsUpdate = true; return; }
+        if (o.drawScreen) {
+          if (hiRes) { o.drawScreen(g, SW, SH, S); tex.needsUpdate = true; } else { o.drawScreen(gL, LW, LH, S); texL.needsUpdate = true; }
+          if (screenMat && screenMat.map !== (hiRes ? tex : texL)) screenMat.map = hiRes ? tex : texL;
+          return;
+        }
         var L = S.light;
         g.globalAlpha = 1; g.fillStyle = mixHex("#0b1430", "#f9f2fc", L); g.fillRect(0, 0, SW, SH);
         if (L < 0.02) { tex.needsUpdate = true; return; }
@@ -4518,7 +4528,7 @@ window.EC_LAPTOP_GLTF = "{\"asset\":{\"generator\":\"glTF-Transform v3.10.1\",\"
             if (n.name === "screen" && n.isMesh) screenMesh = n;
             if (n.name === "screen" && !n.isMesh) n.traverse(function (m) { if (m.isMesh) screenMesh = m; });
           });
-          if (screenMesh) screenMesh.material = new T.MeshBasicMaterial({ map: tex, toneMapped: false });
+          if (screenMesh) screenMesh.material = screenMat = new T.MeshBasicMaterial({ map: o.drawScreen ? texL : tex, toneMapped: false });
           pivotG.add(model);
           root.classList.add("is-ready"); canvas.classList.add("is-on");
           if (D.fonts && D.fonts.load) Promise.all(["400 40px Fraunces", "300 40px Fraunces", '500 20px "Geist Mono"', "400 20px Geist"].map(function (f) { return D.fonts.load(f).catch(function () {}); })).then(function () { dirty = true; });
@@ -4531,13 +4541,15 @@ window.EC_LAPTOP_GLTF = "{\"asset\":{\"generator\":\"glTF-Transform v3.10.1\",\"
         else ld.load(o.model, onLoad, undefined, onErr);
       });
 
+      var SCREEN_KEYS = { light: 1, bar: 1, cards: 1 };
       function tw(dur, delay, ease, fn) {
         return new Promise(function (res) { tweens.push({ t0: performance.now() + (delay || 0), d: dur, e: ease, fn: fn, res: res, from: null }); });
       }
       function to(key, idx, val, dur, delay, ease) {
         return tw(dur, delay, ease, function (p, tt) {
           if (tt.from === null) tt.from = idx == null ? S[key] : S[key][idx];
-          var v = lerp(tt.from, val, p); if (idx == null) S[key] = v; else S[key][idx] = v; dirty = true;
+          /* ekran dokusu yalnız ekranın içeriği değişince yeniden çizilir; dönüş/kamera tween'leri dokuya dokunmaz */
+          var v = lerp(tt.from, val, p); if (idx == null) S[key] = v; else S[key][idx] = v; if (SCREEN_KEYS[key]) dirty = true;
         });
       }
       function stopTweens() { tweens.forEach(function (t) { t.res(); }); tweens = []; }
@@ -4587,7 +4599,7 @@ window.EC_LAPTOP_GLTF = "{\"asset\":{\"generator\":\"glTF-Transform v3.10.1\",\"
         var dist = Math.min(sh / (2 * tanH), sw / (2 * tanH * camera.aspect)) * 0.96;
         camEnd = { pos: c.clone().add(n.multiplyScalar(dist)), target: c };
       }
-      var covered = false, lookAt = new T.Vector3(), onFrame = null, last = performance.now(), t0 = last, raf = 0, visible = true;
+      var covered = false, lookAt = new T.Vector3(), onFrame = null, last = performance.now(), t0 = last, raf = 0, visible = true, lastDraw = 0;
       function loop(now) {
         raf = requestAnimationFrame(loop);
         var dt = Math.min(0.05, (now - last) / 1000); last = now;
@@ -4612,7 +4624,9 @@ window.EC_LAPTOP_GLTF = "{\"asset\":{\"generator\":\"glTF-Transform v3.10.1\",\"
         var yw = yawG.rotation.y, pz = pivotG.position.z;
         blobG.position.set(pz * Math.sin(yw), pivotG.position.y - 0.0015, pz * Math.cos(yw)); blobG.rotation.y = yw;
         if (lidNode) lidNode.rotation.x = S.lid;
-        if (dirty) { drawScreen(); dirty = false; }
+        /* 1512×1000 doku yüklemesi pahalı: ekran solarken en çok ~30 kez/sn yeniden çizilir */
+        if ((S.push > 0.08) !== hiRes) { hiRes = !hiRes; dirty = true; lastDraw = 0; }
+        if (dirty && now - lastDraw >= 30) { drawScreen(); dirty = false; lastDraw = now; }
         if (S.push > 0 && !camEnd) computeCamEnd();
         if (camEnd && S.push > 0) {
           camera.position.lerpVectors(frame0.pos, camEnd.pos, S.push); lookAt.lerpVectors(frame0.target, camEnd.target, S.push);
