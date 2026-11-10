@@ -112,11 +112,12 @@
           "problem": "",
           "approach": "Modern ve Kurumsal",
           "result": "",
-          "cardImage": "",
-          "coverImage": "",
+          "cardImage": "assets/projects/celebi-ticaret-card-mwb0zt0e.jpg",
+          "coverImage": "assets/projects/celebi-ticaret-cover-mwb0zw27.jpg",
           "gallery": [
-            "assets/projects/celebi-ticaret-galeri-mvjgc2qu.webp",
-            "assets/projects/celebi-ticaret-galeri-mvjgc2gc.webp"
+            "assets/projects/celebi-ticaret-galeri-mwb10pxm.png",
+            "assets/projects/celebi-ticaret-galeri-mwb10pxg.png",
+            "assets/projects/celebi-ticaret-galeri-mwb119ii.png"
           ],
           "phoneScreens": []
         },
