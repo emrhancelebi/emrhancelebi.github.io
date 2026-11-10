@@ -104,7 +104,7 @@
         },
         {
           "id": "kimlik-2",
-          "title": "ÇELEBİ TİCARET",
+          "title": "ÇELEBİ TİCARET ",
           "category": "KURUMSAL KİMLİK TASARIMI",
           "year": "2025",
           "role": "TASARIMCI",
@@ -118,7 +118,9 @@
           "gallery": [
             "assets/projects/celebi-ticaret-galeri-mwb10pxm.png",
             "assets/projects/celebi-ticaret-galeri-mwb10pxg.png",
-            "assets/projects/celebi-ticaret-galeri-mwb119ii.png"
+            "assets/projects/celebi-ticaret-galeri-mwb119ii.png",
+            "assets/projects/celebi-ticaret-galeri-mwb1hc5p.webp",
+            "assets/projects/celebi-ticaret-galeri-mwb17y7o.jpg"
           ],
           "phoneScreens": []
         },
