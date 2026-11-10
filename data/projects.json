@@ -131,13 +131,18 @@
           "year": "2026",
           "role": "TASARIMCI",
           "tools": "",
-          "intro": "Bu projenin açıklaması yakında eklenecek.",
+          "intro": "..",
           "problem": "",
           "approach": "",
           "result": "",
-          "cardImage": "",
-          "coverImage": "",
-          "gallery": [],
+          "cardImage": "assets/projects/abdulkadir-bayram-insaat-card-mwb1yvuz.png",
+          "coverImage": "assets/projects/abdulkadir-bayram-insaat-cover-mwb1yxe4.png",
+          "gallery": [
+            "assets/projects/abdulkadir-bayram-insaat-galeri-mwb1z22d.png",
+            "assets/projects/abdulkadir-bayram-insaat-galeri-mwb1z5al.png",
+            "assets/projects/abdulkadir-bayram-insaat-galeri-mwb1zdsh.png",
+            "assets/projects/abdulkadir-bayram-insaat-galeri-mwb1zeyn.png"
+          ],
           "phoneScreens": []
         },
         {
